@@ -1,0 +1,9 @@
+---
+---
+
+@import "{{ site.theme }}";
+.site-footer { display: none; }
+body { font-family: system-ui, 'DejaVu Sans', Tahoma; }
+.page-header > .btn { display: none; }
+#date { font-size: smaller; }
+.highlighter-rouge[class^=language] { direction: ltr; }

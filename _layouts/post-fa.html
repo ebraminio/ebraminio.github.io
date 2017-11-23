@@ -1,0 +1,23 @@
+---
+layout: default
+---
+
+<article class="post" dir="rtl" lang="fa">
+  <h1>{{ page.title }}</h1>
+
+  <div class="entry">
+    {{ content }}
+  </div>
+
+  {{ site.author.name_fa }} | <span id="date">{{ page.date | date: "%Y-%m-%d" }}</span>
+
+  <script>
+  document.addEventListener('DOMContentLoaded', () => {
+    const date = document.getElementById('date');
+    date.innerText = new Date(document.getElementById('date').innerText)
+      .toLocaleDateString('fa');
+  });
+  </script>
+
+  <!-- { % include disqus.html % } -->
+</article>

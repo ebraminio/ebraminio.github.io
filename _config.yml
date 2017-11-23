@@ -1,0 +1,17 @@
+title: گیت‌هاب نوشته‌ها
+description: این قافلهٔ عمر عجب می‌گذرد
+theme: jekyll-theme-cayman
+markdown: kramdown
+show_downloads: false
+google_analytics:
+
+author:
+  name: Ebrahim Byagowi
+  name_fa: ابراهیم بیاگوی
+  email: ebrahim@gnu.org
+  github: ebraminio
+  twitter: ebraminio
+
+plugins:
+  - jekyll-mentions
+  - jekyll-feed

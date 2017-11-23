@@ -1,0 +1,2 @@
+.reveal .slides { direction: rtl; text-align: right; }
+.cell .input, .cell .output_wrapper { direction: ltr; text-align: left; }
