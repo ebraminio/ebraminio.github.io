@@ -12,8 +12,8 @@ layout: default
   {{ site.author.name_fa }} | <span id="date">{{ page.date | date: "%Y-%m-%d" }}</span>
 
   <script>
-  document.addEventListener('DOMContentLoaded', () => {
-    const date = document.getElementById('date');
+  document.addEventListener('DOMContentLoaded', function () {
+    var date = document.getElementById('date');
     date.innerText = new Date(document.getElementById('date').innerText)
       .toLocaleDateString('fa');
   });

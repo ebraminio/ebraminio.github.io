@@ -1,0 +1,89 @@
+<!DOCTYPE html>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/showdown/1.8.4/showdown.js" integrity="sha256-R9qk+J9safXMq1bSKkMout5+naEx6wMPy+dw2X+GZ8M=" crossorigin="anonymous"></script>
+<style>
+html, body { height: 99%; }
+body { font-family: system-ui; }
+#input { font-size: 140%; font-family: monospace; float: right; width: 48%; height: 93%; padding: .5em; }
+#output { float: left; width: 49%; height: 93%; overflow-y: scroll; border: solid 1px gray; padding: .5em; }
+#stat { font-size: 200%; }
+pre { direction: ltr; }
+</style>
+<textarea id="input" onchange="convertMarkdownToHtml()"></textarea>
+<div id="output"></div>
+<div id="stat"></div>
+<div style="clear: both"></div>
+<button onclick="save()">Save</button>
+<label id="dir"><input type="checkbox" onclick="output.dir = input.dir = this.checked ? 'rtl' : 'ltr'"> RTL?</label>
+<script>
+'use strict';
+
+var converter = new showdown.Converter();
+
+var input = document.getElementById('input');
+var output = document.getElementById('output');
+var stat = document.getElementById('stat');
+
+var post = location.hash.replace(/^#/g, '');
+fetch(post)
+  .then(res => res.text())
+  .then(text => text)
+  .then(text => {
+    input.value = text;
+    convertMarkdownToHtml();
+  });
+
+var unsavedChange = true;
+document.addEventListener("keydown", function (event) {
+  if ((event.ctrlKey || event.metaKey) && event.which == 83) {
+    save();
+    event.preventDefault();
+    return false;
+  }
+});
+
+function save() {
+  setTimeout(function () {
+    stat.style.display = 'none';      
+  }, 2000);
+
+  var formData = new FormData();
+  formData.append('blob', new Blob([input.value]));
+  return fetch(post, { method: 'POST', body: formData })
+    .then(x => x.text())
+    .then(() => {
+      stat.innerText = 'Saved!';
+      stat.style.display = 'block';
+      unsavedChange = false;
+    }, () => {
+      stat.innerText = 'Failed to save!';
+      stat.style.display = 'block';
+    });
+}
+
+window.onbeforeunload = function () {
+  if (unsavedChange) {
+    return "Save please!";
+  }
+  return;
+};
+
+// https://jsfiddle.net/jonathansampson/m7G64/
+function throttle (callback, limit) {
+  var wait = false;                  // Initially, we're not waiting
+  return function () {               // We return a throttled function
+    if (!wait) {                   // If we're not waiting
+      callback.call();           // Execute users function
+      wait = true;               // Prevent future invocations
+      setTimeout(function () {   // After a period of time
+        wait = false;          // And allow future invocations
+      }, limit);
+    }
+  }
+}
+
+var convertMarkdownToHtml = throttle(function () {
+  unsavedChange = true;
+  output.innerHTML = converter.makeHtml(input.value);
+}, 500);
+
+</script>

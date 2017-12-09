@@ -38,4 +38,4 @@ layout: default
 * [PDB-Downloader](https://ebraminio.github.io/PDB-Downloader/index.html)
 * [curl pad.js.org &#124; node](http://pad.js.org)
 * [Eigendecomposition](/extra/eigendecomposition.slides.html)
-* [APK decompile](https://ilikekillnerds.com/2014/09/how-to-decompile-and-compile-android-apks-on-a-mac-using-apktool/)
+* APK decompile: [1](https://blog.bramp.net/post/2015/08/01/decompile-and-recompile-android-apk/), [2](https://ilikekillnerds.com/2014/09/how-to-decompile-and-compile-android-apks-on-a-mac-using-apktool/)
