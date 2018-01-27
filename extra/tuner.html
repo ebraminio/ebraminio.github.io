@@ -1,0 +1,303 @@
+<!DOCTYPE html>
+<meta charset=utf8>
+<title>Tuner / Metronome / Signal Generator</title>
+<script src="aubio.js"></script>
+<fieldset>
+  <legend>Tuner:</legend>
+  <button onclick="startTuner()">Start</button>
+  <select id="bufferSize">
+    <option value="512">512</option>
+    <option value="1024">1024</option>
+    <option value="2048">2048</option>
+    <option value="4096">4096</option>
+  </select>
+  <label><input type="checkbox" id="micCheckbox" checked> MIC?</label>
+  <label><input type="checkbox" id="abcCheckbox"> ABC?</label>
+  <label><input type="checkbox" id="stabilizeCheckbox"> Stabilize?</label>
+  <div id="result">
+    Frequency: <span id="frequencyResult"></span>
+    <br>Note: <span id="noteResult" style="line-height: 1;"></span>
+    <br>Cents: <meter value="0" min="0" max="100" id="centsNegative" style="transform: scaleX(-1)"></meter><meter value="0" min="0" max="100" id="centsPositive"></meter>
+    <br>Tempo: <span id="tempoResult"></span>
+    <br>Loudness: <span id="decibelResult"></span>
+    <canvas height="0" width="0" id="waveCanvas"></canvas>
+    <canvas height="0" width="0" id="fftCanvas"></canvas>
+  </div>
+  Violin: Mi<sub>3</sub> La<sub>4</sub> Re<sub>4</sub> Sol<sub>5</sub><br>
+  Guitar: Mi<sub>3</sub> La<sub>4</sub> Re<sub>4</sub> Sol<sub>5</sub> Si<sub>5</sub> Mi<sub>6</sub>
+</fieldset>
+<fieldset>
+  <fieldset id="metronomeContainer">
+    <legend>Metronome:</legend>
+    <button onclick="document.getElementById('beats').onchange()">Start</button>
+    <button onclick="stop()">Stop</button>
+    <br>
+    BPM: <input value="60" id="beats" type="number" onchange="metronome(this.value)">
+    <select id="tempoSelect" onchange="
+      document.getElementById('beats').value = tempoName[this.value][0];
+      document.getElementById('beatsTrack').value = tempoName[this.value][0] + Math.floor(tempoName[this.value][1] - tempoName[this.value][0] / 2);
+      document.getElementById('beats').onchange();
+    "><option value="60">Tempo di valse - 60</option></select>
+    <br>
+    <input value="60" min="40" max="280" type="range" id="beatsTrack" onchange="
+      document.getElementById('beats').value = this.value;
+      document.getElementById('beats').onchange();
+    ">
+  </fieldset>
+  <fieldset>
+    <legend>Signal Generator:</legend>
+    <button onclick="document.getElementById('freq').onchange()">Start</button>
+    <button onclick="stop()">Stop</button>
+    <br>
+    Frequency: <input value="440" id="freq" type="number" onchange="
+      play(this.value);
+      document.getElementById('noteName').innerHTML = getNoteLabel(getNote(this.value));
+    ">
+    <span id="noteName" style="line-height: 1;">La<sub>4</sub></span>
+    <br>
+    <input value="69" min="15" max="135" type="range" oninput="document.getElementById('freq').value = getStandardFrequency(this.value); document.getElementById('freq').onchange()">
+  </fieldset>
+  <hr>Volume: <input value="100" min="0" max="100" id="volume" type="range" oninput="gainNode.gain.setTargetAtTime(volume.value / 100, audioContext.currentTime, 0.1);">
+  <hr>
+  Wave type:
+  <button onclick="oscillator.setPeriodicWave(null); oscillator.type = 'sine';">Sine</button>
+  <button onclick="oscillator.setPeriodicWave(null); oscillator.type = 'square';">Square</button>
+  <button onclick="oscillator.setPeriodicWave(null); oscillator.type = 'sawtooth';">Sawtooth</button>
+  <button onclick="oscillator.setPeriodicWave(null); oscillator.type = 'triangle';">Triangle</button>
+  <button onclick="
+    document.getElementById('real').value = '0,1';
+    document.getElementById('imag').value = '0,0';
+    setCustomWave();
+    play(440);
+  ">Simple</button>
+  <button onclick="
+    document.getElementById('real').value = '0,0.4,0.4,1,1,1,0.3,0.7,0.6,0.5,0.9,0.8';
+    document.getElementById('imag').value = '0,0,0,0,0,0,0,0,0,0,0,0';
+    setCustomWave();
+    play(160);
+  ">Horn</button>
+  <br>Or, manual:<br>
+  Real (a<sub>n</sub>): <input onchange="setCustomWave()" type="text" id="real" style="width: 300px" value=""><br>
+  Imag (b<sub>n</sub>): <input onchange="setCustomWave()" type="text" id="imag" style="width: 300px" value="">
+  <br>
+<script>
+'use strict';
+
+var audioContext = new (window.AudioContext || window.webkitAudioContext)();
+var noteStrings = ['C', 'C♯', 'D', 'D♯', 'E', 'F', 'F♯', 'G', 'G♯', 'A', 'A♯', 'B'];
+var noteStringsLatin = ['Do', 'Do♯', 'Re', 'Re♯', 'Mi', 'Fa', 'Fa♯', 'Sol', 'Sol♯', 'La', 'La♯', 'Si'];
+var middleA = 440;
+var semitone = 69;
+var analyser = audioContext.createAnalyser();
+var gainNode = audioContext.createGain();
+gainNode.connect(audioContext.destination);
+gainNode.connect(analyser);
+
+var oscillator = audioContext.createOscillator();
+
+var tempoSelect = document.getElementById('tempoSelect');
+var tempoName = {
+  // https://github.com/InnovAnon-Inc/HafrenHaver/blob/master/music/Trivia.py
+  larghissimo: [1, 24],
+  grave: [25, 45],
+  largo: [40, 60],
+  lento: [45, 60],
+  larghetto: [60, 66],
+  adagio: [66, 76],
+  adagietto: [72, 76],
+  andante: [76, 108],
+  andantino: [80, 108],
+  marcia_moderato: [83, 85],
+  andante_moderato: [92, 112],
+  moderato: [102, 120],
+  allegretto: [112, 120],
+  allegro_moderato: [116, 120],
+  allegro: [120, 168],
+  vivace: [168, 176],
+  vivacissimo: [172, 176],
+  allegrissimo: [172, 176],
+  allegro_vivace: [172, 176],
+  presto: [168, 200],
+  prestissimo: [200, 380] // 380: reasonable_max_tempo
+};
+Object.keys(tempoName).forEach(function (name) {
+  var option = document.createElement('option');
+  option.setAttribute('value', name);
+  option.innerText = name + ' / ' + tempoName[name][0] + '-' + tempoName[name][1];
+  tempoSelect.appendChild(option);
+});
+
+oscillator.start();
+gainNode.gain.setTargetAtTime(0, audioContext.currentTime, 0);
+oscillator.connect(gainNode);
+
+var volume = document.getElementById('volume');
+
+function play(frequency) {
+  stop();
+  oscillator.frequency.setTargetAtTime(frequency, audioContext.currentTime, 0.1);
+  volume.oninput();
+  setCustomWave();
+}
+
+function setCustomWave() {
+  if (!oscillator) return;
+  if (!document.getElementById('real').value.length) return;
+
+  var real = new Float32Array(document.getElementById('real').value.split(',').map(x => +x));
+  var imag = new Float32Array(document.getElementById('imag').value.split(',').map(x => +x));
+  if (real.length !== imag.length) return;
+
+  oscillator.setPeriodicWave(audioContext.createPeriodicWave(real, imag));
+}
+
+var beepLength = 0.05;
+function metronome(beeps) {
+  var time = audioContext.currentTime;
+  var interval = 60 / beeps;
+  for (var i = 0; i < 1000; i++) {
+    gainNode.gain.setTargetAtTime(volume.value / 100, time, 0.1);
+    gainNode.gain.setTargetAtTime(0, time + 0.05, 0.1);
+    time += interval;
+  }
+}
+
+
+function stop() {
+  //oscillator.stop();
+  gainNode.gain.setTargetAtTime(0, audioContext.currentTime, 0.01);
+}
+
+function getCents(frequency, note) {
+  return Math.floor(1200 * Math.log(frequency / getStandardFrequency(note)) / Math.log(2));
+}
+
+function getStandardFrequency(note) {
+  return middleA * Math.pow(2, (note - semitone) / 12)
+}
+
+function getNote(frequency) {
+  var note = 12 * (Math.log(frequency / middleA) / Math.log(2));
+  return Math.round(note) + semitone;
+}
+
+function getNoteLabel(note) {
+  return (abcCheckbox.checked ? noteStrings : noteStringsLatin)[note % 12] +
+    '<sub>' + (parseInt(note / 12) - 1) + '</sub>';
+}
+
+var isTunerAlreadyStarted = false;
+function startTuner() {
+  if (isTunerAlreadyStarted) return;
+  isTunerAlreadyStarted = true;
+  // Module is coming from aubio.js
+  Module().then(function (module) {
+    // 512 tempo
+    // 2048 fft
+    // 4096 pitch
+
+    var bufferSize = +document.getElementById('bufferSize').value;
+    var aubioTempo = new module.AubioTempo('default', bufferSize * 4, bufferSize, audioContext.sampleRate)
+    var scriptProcessor = audioContext.createScriptProcessor(bufferSize, 1, 1);
+    var pitchDetector = new module.AubioPitch('default', bufferSize, 1, audioContext.sampleRate);
+
+    var width = document.getElementById('metronomeContainer').clientWidth;
+    var height = 100;
+
+    var waveCanvas = document.getElementById('waveCanvas');
+    waveCanvas.width = width;
+    waveCanvas.height = height;
+    var waveContext = waveCanvas.getContext('2d');
+    var fftCanvas = document.getElementById('fftCanvas');
+    fftCanvas.width = width;
+    fftCanvas.height = height;
+    var fftContext = fftCanvas.getContext('2d');
+
+    var frequencyResult = document.getElementById('frequencyResult');
+    var noteResult = document.getElementById('noteResult');
+    var centsNegative = document.getElementById('centsNegative');
+    var centsPositive = document.getElementById('centsPositive');
+    var abcCheckbox = document.getElementById('abcCheckbox');
+    var stabilizeCheckbox = document.getElementById('stabilizeCheckbox');
+    var micCheckbox = document.getElementById('micCheckbox');
+    var tempoResult = document.getElementById('tempoResult');
+    var decibelResult = document.getElementById('decibelResult');
+    var fftResult = document.getElementById('fftResult');
+
+    new Promise(function (resolve) {
+      if (micCheckbox.checked)
+        navigator.mediaDevices.getUserMedia({ audio: true }).then(function (stream) {
+          audioContext.createMediaStreamSource(stream).connect(analyser);
+        }).then(resolve);
+      resolve();
+    }).then(function () {
+      analyser.connect(scriptProcessor);
+      analyser.smoothingTimeConstant = .1;
+      
+      var spectrumBuffer = new Uint8Array(analyser.frequencyBinCount);
+
+      scriptProcessor.connect(audioContext.destination);
+      scriptProcessor.addEventListener('audioprocess', function (event) {
+        var buffer = event.inputBuffer.getChannelData(0);
+
+        var rms = Math.sqrt(buffer.reduce((x, y) => x + Math.abs(y), 0) / bufferSize);
+        decibelResult.innerText = Math.floor(20 * Math.log10(rms * 100)) + ' dB';
+
+        var frequency = pitchDetector.do(buffer);
+        if (frequency) {
+          var note = getNote(frequency);
+          frequencyResult.innerText = frequency + ' Hz';
+
+          noteResult.innerHTML =
+            '<small><small style="color: gray">' + getNoteLabel(note - 1) + '</small></small>' +
+            '← ' + getNoteLabel(note) + ' →' +
+            '<small><small style="color: gray">' + getNoteLabel(note + 1) + '</small></small>' +
+            ' / ' + note
+            + ' (~' + Math.floor(getStandardFrequency(note)) + ' Hz)';
+          var cents = getCents(frequency, note);
+          if (cents < 0) {
+            centsNegative.value = -cents;
+            centsPositive.value = 0;
+          } else {
+            centsNegative.value = 0;
+            centsPositive.value = cents;
+          }
+        }
+
+        if (aubioTempo.do(buffer)) {
+          tempoResult.innerText = Math.floor(aubioTempo.getBpm()) + ' BPM';
+        }
+
+        fftContext.clearRect(0, 0, width, height);
+        analyser.getByteFrequencyData(spectrumBuffer);
+        var spectrumDataLength = parseInt(spectrumBuffer.length * 0.25);
+        var spectrumBarWidth = width / spectrumDataLength;
+        spectrumBuffer.reduce(function (x, value, index) {
+          value = value / 255 * height;
+          fftContext.fillStyle = 'hsl(' + (index * 360 / (spectrumDataLength)) + ', 100%, 50%)';
+          fftContext.fillRect(x, height - value, spectrumBarWidth, value);
+          return x + spectrumBarWidth;
+        }, 0);
+
+        waveContext.clearRect(0, 0, width, height);
+        var maxOfBuffer = Math.max(...buffer);
+        var waveDataLength = parseInt(buffer.length * 0.25);
+        var waveBarWidth = width / waveDataLength;
+        if (stabilizeCheckbox.checked) {
+          var peakPosition = buffer.indexOf(maxOfBuffer);
+          var buffer2 = new Float32Array(bufferSize);
+          buffer2.set(buffer.slice(peakPosition, bufferSize), 0);
+          buffer2.set(buffer.slice(0, peakPosition), bufferSize - peakPosition);
+          buffer = buffer2;
+        }
+        buffer.reduce(function (x, value, index) {
+          value = value / maxOfBuffer * height / 2;
+          waveContext.fillStyle = 'hsl(' + (index * 360 / waveDataLength) + ', 100%, 50%)';
+          waveContext.fillRect(x, height / 2, waveBarWidth, -value);
+          return x + waveBarWidth;
+        }, 0);
+      });
+    }, alert);
+  });
+}
+</script>

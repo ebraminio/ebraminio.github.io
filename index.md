@@ -13,7 +13,7 @@ layout: default
 ----
 
 ## OpenGL
-* [Tutorial 1](/extra/WebGL1.html), [Tutorial 2](/extra/WebGL2.html), [glcourse](https://github.com/ebraminio/glcourse)
+* [Tutorial 1](/extra/WebGL1.html), [Tutorial 2](/extra/WebGL2.html), [glcourse](https://github.com/ebraminio/glcourse) (mine)
 * [An intro to modern OpenGL](http://duriansoftware.com/joe/An-intro-to-modern-OpenGL.-Table-of-Contents.html)
 * [Anton's OpenGL 4 Tutorials](http://antongerdelan.net/opengl/)
 * [WebGL Fundamentals](https://webglfundamentals.org)
@@ -27,6 +27,15 @@ layout: default
 * [graphbook](https://code.google.com/archive/p/graphbook/)
 * [Snap](http://snap.stanford.edu)
 
+## Music related
+* [Tuner / Metronome / Signal Generator](/extra/tuner.html) (mine)
+* Android Simple Synthesizer: [1](https://github.com/ebraminio/simplesynth) [2](https://github.com/ebraminio/oldsimplesynth) (mine)
+* [midi protocol](https://www.midi.org/specifications/item/table-1-summary-of-midi-message)
+
+## Blockchain
+* [naivechain](https://medium.com/@lhartikk/a-blockchain-in-200-lines-of-code-963cc1cc0e54)
+* [naivecoin](https://github.com/conradoqg/naivecoin)
+
 ## Other topics
 * [Mining of Massive Datasets](http://www.mmds.org) (Big data)
 * [Software Testing](http://cs.gmu.edu/~offutt/softwaretest/)
@@ -35,7 +44,9 @@ layout: default
 * Search for "site:bcourses.berkeley.edu courses"
 
 ## Unsorted links
-* [PDB-Downloader](https://ebraminio.github.io/PDB-Downloader/index.html)
-* [curl pad.js.org &#124; node](http://pad.js.org)
-* [Eigendecomposition](/extra/eigendecomposition.slides.html)
+* [Quantum Development Kit Documentation](https://docs.microsoft.com/en-us/quantum/)
+* [Blockchain](https://github.com/conradoqg/naivecoin)
+* [PDB-Downloader](https://ebraminio.github.io/PDB-Downloader/index.html) (mine)
+* [curl pad.js.org &#124; node](http://pad.js.org) (mine)
+* [Eigendecomposition](/extra/eigendecomposition.slides.html) (mine)
 * APK decompile: [1](https://blog.bramp.net/post/2015/08/01/decompile-and-recompile-android-apk/), [2](https://ilikekillnerds.com/2014/09/how-to-decompile-and-compile-android-apks-on-a-mac-using-apktool/)
