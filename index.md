@@ -12,6 +12,15 @@ layout: default
 
 ----
 
+## TrueType/OpenType/AAT related quick links
+* [Microsft OpenType Specication](https://docs.microsoft.com/en-us/typography/opentype/spec/glyf)
+* [Apple AAT Specification](https://developer.apple.com/fonts/TrueType-Reference-Manual/RM06/Chap6just.html)
+* [fonttools](https://github.com/fonttools/fonttools/tree/master/Lib/fontTools/ttLib/tables)
+* [fontkit](https://github.com/devongovett/fontkit/tree/master/src/tables) ([aat-kern branch](https://github.com/devongovett/fontkit/tree/aat-kern/src/tables))
+* [opentype.js](https://github.com/nodebox/opentype.js/blob/master/src/tables/cff.js)
+* [freetype](https://github.com/personal-mirrors/freetype2)
+* [harfbuzz](https://github.com/harfbuzz/harfbuzz/tree/master/src)
+
 ## OpenGL
 * [Tutorial 1](/extra/WebGL1.html), [Tutorial 2](/extra/WebGL2.html), [glcourse](https://github.com/ebraminio/glcourse) (mine)
 * [An intro to modern OpenGL](http://duriansoftware.com/joe/An-intro-to-modern-OpenGL.-Table-of-Contents.html)
