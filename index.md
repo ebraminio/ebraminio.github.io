@@ -21,6 +21,18 @@ layout: default
 * [freetype](https://github.com/personal-mirrors/freetype2)
 * [harfbuzz](https://github.com/harfbuzz/harfbuzz/tree/master/src)
 
+## IO
+* [aix-nio](https://github.com/dmlloyd/openjdk/tree/jdk/jdk/src/java.base/aix/native/libnio)
+* [linux-nio](https://github.com/dmlloyd/openjdk/tree/jdk/jdk/src/java.base/linux/native/libnio)
+* [macosx-nio](https://github.com/dmlloyd/openjdk/tree/jdk/jdk/src/java.base/macosx/native/libnio)
+* [solaris-nio](https://github.com/dmlloyd/openjdk/tree/jdk/jdk/src/java.base/solaris/native/libnio)
+* [unix-nio](https://github.com/dmlloyd/openjdk/tree/jdk/jdk/src/java.base/unix/native/libnio)
+* [windows-nio](https://github.com/dmlloyd/openjdk/tree/jdk/jdk/src/java.base/windows/native/libnio)
+* [pipe](https://github.com/cgaebel/pipe)
+* [classpath-nio](https://github.com/penberg/classpath/tree/master/native/jni/java-nio)
+* [System Programming](https://github.com/angrave/SystemProgramming/wiki)
+* [UNIX Lecture Notes](http://www.compsci.hunter.cuny.edu/~sweiss/course_materials/unix_lecture_notes/)
+
 ## OpenGL
 * [Tutorial 1](/extra/WebGL1.html), [Tutorial 2](/extra/WebGL2.html), [glcourse](https://github.com/ebraminio/glcourse) (mine)
 * [An intro to modern OpenGL](http://duriansoftware.com/joe/An-intro-to-modern-OpenGL.-Table-of-Contents.html)
@@ -51,8 +63,6 @@ layout: default
 * [GPU Programming](http://courses.cms.caltech.edu/cs179/)
 * [Introduction to Data Science](https://bcourses.berkeley.edu/courses/1267848/wiki)
 * Search for "site:bcourses.berkeley.edu courses"
-
-## Unsorted links
 * [Quantum Development Kit Documentation](https://docs.microsoft.com/en-us/quantum/)
 * [Blockchain](https://github.com/conradoqg/naivecoin)
 * [PDB-Downloader](https://ebraminio.github.io/PDB-Downloader/index.html) (mine)
