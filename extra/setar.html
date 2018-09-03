@@ -1,0 +1,58 @@
+<html dir="rtl" lang="fa"><head>
+  <meta http-equiv="content-type" content="text/html; charset=UTF-8">
+  <meta name="viewport" content="width=device-width">
+  <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.1.3/css/bootstrap.min.css" integrity="sha384-MCw98/SFnGE8fJT3GXwEOngsV7Zt27NXFoaoApmYm81iuXoPkFOJwJ8ERdknLPMO" crossorigin="anonymous">
+  <meta charset="utf-8">
+  <style>
+  * { font-family: 'sans-serif', 'Segoe UI'; }
+  body { text-align: start; }
+  tr:nth-child(2n) { background-color: #D0D0D0; }
+  td { border: 1px solid #F0F0F0; padding: .5em; text-align: center; }
+  th { padding: .5em; }
+  table { border-collapse: collapse; }
+  nav { background-color: #222; color: #9d9d9d; }
+  </style>
+</head>
+<body>
+  <nav class="navbar navbar-inverse navbar-fixed-top">
+    محاسبات پرده‌های سه‌تار
+  </nav>
+  <div class="jumbotron">
+    <div class="form-inline">
+      <div class="form-group">
+        <input class="form-control" id="current" value="69" onkeypress="setTimeout(calc, 100)" type="number">
+        <button class="btn btn-primary" onclick="calc()">محاسبه</button>
+      </div>
+    </div>
+  </div>
+  <div class="container">
+    <div id="result" style="column-count: 2;"></div>
+  </div>
+<script>
+function calc() {
+  var max = 690;
+  var frets = [0, 50, 73, 102, 126, 142, 173, 192,
+    210, 230, 248, 264, 278, 297, 314, 323, 345,
+	370, 382, 397, 408, 416, 431, 450, 460, 469];
+  var fretsWidth = [
+    1, 2, 3, 5, 6, 9, 11, 13, 16, 18, 22, 24
+  ];
+  var notes = ['دو', 'ر کرون', 'ر', 'می بمل', 'می کرون',
+    'می', 'فا', 'سل بمل', 'سل کرون', 'سل',
+	'لا بمل', 'لا کرون', 'لا', 'سی بمل', 'سی کرون', 'سی',
+	'دو', 'ر کرون', 'ر', 'می بمل', 'می کرون', 'می', 'فا',
+	'سل کرون', 'سل', 'لا بمل'];
+  var current = +document.getElementById('current').value;
+  var result = frets.map(function (x, i) {
+    return '<tr><td>' + notes[i] + '</td><td>' +
+      Math.round(x / max * current * 10) / 10 + '</td><td>' +
+      (fretsWidth.indexOf(i) !== -1 ? 'چهار' : 'سه') + '</td></tr>';
+  }).join('\n');
+  document.getElementById('result').innerHTML = '<table><thead><tr>' +
+    '<th>نت</th><th>فاصله (cm)</th><th>قطر پرده</th></tr></thead><tbody>' +
+    result + '</tbody></table>';
+};
+calc();
+</script>
+
+</body></html>
