@@ -77,9 +77,42 @@ frame.add(button)
 frame.setVisible(true)
 //
 Thread.sleep(1000)
-frame.add(new Button("Last Button!"))
+frame.add(new JButton("Last Button!"))
 frame.revalidate() // should be revalidated if a widget added after frame made visibile
 System.out.println("Finished!")
+```
+
+Or in Kotlin:
+```js
+$ kotlinc-jvm -Djava.awt.headless=false
+import javax.swing.*
+import java.awt.GridLayout
+
+JFrame() // Possibly the first attempt fails, so
+
+val frame = JFrame()
+UIManager.setLookAndFeel(UIManager.getSystemLookAndFeelClassName())
+frame.apply {
+  setTitle("Swing Hello World")
+  setSize(400, 400)
+  setLayout(GridLayout(0, 2))
+  setLocationRelativeTo(null)
+  setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE)
+  add(JButton("Button 1"))
+  add(JButton("Button 2"))
+  add(JButton("Print 'Hello World'").apply {
+    addActionListener({ println("Hello World") })
+  })
+  setVisible(true)
+}
+
+//
+Thread.sleep(1000)
+frame.apply {
+  add(JButton("Last Button!"))
+  revalidate() // should be revalidated if a widget added after frame made visibile
+}
+println("Finished!")
 ```
 
 ![Swing](https://i.imgur.com/iQdtHe8.png)
@@ -96,17 +129,17 @@ import org.eclipse.swt.layout.*
 import org.eclipse.swt.widgets.*
 
 var display = new Display()
-Shell shell = new Shell(display);
+var shell = new Shell(display)
 shell.setLayout(new RowLayout())
 shell.setText("SWT Hello World")
 
-var text = new Text(shell, SWT.NONE);
+var text = new Text(shell, SWT.NONE)
 text.setText("A text editor")
 
-new Button(shell, SWT.PUSH).setText("Button 1");
-new Button(shell, SWT.PUSH).setText("Button 2");
+new Button(shell, SWT.PUSH).setText("Button 1")
+new Button(shell, SWT.PUSH).setText("Button 2")
 var button = new Button(shell, SWT.PUSH)
-button.setText("Print 'Hello World'");
+button.setText("Print 'Hello World'")
 button.addListener(SWT.Selection, e -> System.out.println("Hello World"))
 button.setImage(display.getSystemImage(SWT.ICON_QUESTION))
 

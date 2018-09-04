@@ -15,18 +15,33 @@
 </head>
 <body>
   <nav class="navbar navbar-inverse navbar-fixed-top">
-    محاسبات پرده‌های سه‌تار
+    محاسبات پرده‌های سه‌تار / Setar frets calculator
   </nav>
   <div class="jumbotron">
     <div class="form-inline">
-      <div class="form-group">
-        <input class="form-control" id="current" value="69" onkeypress="setTimeout(calc, 100)" type="number">
-        <button class="btn btn-primary" onclick="calc()">محاسبه</button>
+      <div style="padding: 0 2em; float: left;">
+        <div style="float: left; padding: .5em;">
+          <img width="120" src="rasooli.jpg">
+          <a href="setars.jpg">
+            <img width="120" src="setars.jpg">
+          </a>
+        </div>
+        <div style="float: left">
+          حسین رسولی<br><div style="font-size: 85%">مدرس سه‌تار<br>ساخت و تولید سه‌تار<br></div>
+          <span dir="ltr" style="white-space: nowrap; font-size: 70%">+98 912 264 9784</span>
+        </div>
+      </div>
+      <div style="float: right;" class="form-group">
+        <input class="form-control" id="current" value="69" onchange="calc()" onkeypress="setTimeout(calc, 100)" type="number">
+        <button class="btn btn-primary" onclick="calc()">محاسبه<br>Calc</button>
       </div>
     </div>
   </div>
   <div class="container">
     <div id="result" style="column-count: 2;"></div>
+    <center>
+      <img src="setar.png" width="400">
+    </center>
   </div>
 <script>
 function calc() {
@@ -41,15 +56,26 @@ function calc() {
     'می', 'فا', 'سل بمل', 'سل کرون', 'سل',
 	'لا بمل', 'لا کرون', 'لا', 'سی بمل', 'سی کرون', 'سی',
 	'دو', 'ر کرون', 'ر', 'می بمل', 'می کرون', 'می', 'فا',
-	'سل کرون', 'سل', 'لا بمل'];
+  'سل کرون', 'سل', 'لا بمل'];
+  var englishNotes = notes.map(x => x
+    .replace(' بمل', '♭')
+    .replace(' کرون', '<img src="Koron_sign.svg" width="5">')
+    .replace('دو', 'C')
+    .replace('سی', 'B')
+    .replace('لا', 'A')
+    .replace('فا', 'F')
+    .replace('می', 'E')
+    .replace('سل', 'G')
+    .replace('ر', 'D'));
   var current = +document.getElementById('current').value;
   var result = frets.map(function (x, i) {
-    return '<tr><td>' + notes[i] + '</td><td>' +
-      Math.round(x / max * current * 10) / 10 + '</td><td>' +
-      (fretsWidth.indexOf(i) !== -1 ? 'چهار' : 'سه') + '</td></tr>';
+    var isFourWinded = fretsWidth.indexOf(i) !== -1;
+    return '<tr><td dir="ltr">' + englishNotes[i] + ' - ' + notes[i] + '</td><td>' +
+      Math.round((max - x) / max * current * 10) / 10 + '</td><td>' +
+      (i == 0 ? "-" : (isFourWinded ? '4' : '3')) + '</td></tr>';
   }).join('\n');
   document.getElementById('result').innerHTML = '<table><thead><tr>' +
-    '<th>نت</th><th>فاصله (cm)</th><th>قطر پرده</th></tr></thead><tbody>' +
+    '<th>Fret note<br>نت پرده</th><th>فاصله (cm)</th><th>دور پرده<br>Winds</th></tr></thead><tbody>' +
     result + '</tbody></table>';
 };
 calc();
