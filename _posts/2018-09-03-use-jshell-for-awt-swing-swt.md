@@ -158,3 +158,29 @@ Even the fact SWT has the most appealing and native UI, it doesn't work nice on 
 JavaFX
 ======
 Eh, maybe later
+
+Update:
+
+```js
+$ _JAVA_OPTIONS="-Dprism.verbose=true -Djava.awt.headless=false" jshell --class-path /usr/share/java/openjfx/jre/lib/ext/jfxrt.jar
+package com.jenkov.javafx.helloworld;
+
+import javafx.application.Application;
+import javafx.stage.Stage;
+
+public class MyFxApp extends Application {
+    @Override
+        public void start(Stage primaryStage) throws Exception {
+        primaryStage.setTitle("My First JavaFX App");
+        primaryStage.show();
+    }
+
+    public static void main(String[] args) {
+        Application.launch(args);
+    }
+}
+
+MyFxApp.main(new String[] {})
+```
+
+But it raise No Toolkit error, apparently requiring an official version of JDK installed, or maybe not. It however doesn't have an interesting for REPL API so my journy ends here.
