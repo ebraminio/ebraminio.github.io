@@ -1,0 +1,50 @@
+<!DOCTYPE html>
+<html manifest="application.appcache" dir="rtl" lang="fa">
+    <head>
+        <style>
+        body { background-color:#EEEEEE; }
+        #container { margin: 2em; padding: 2em; }
+        /* Night mode from: https://codepen.io/gijo-varghese/pen/xrxgJX */
+        .night-mode { filter: invert(100%); background: #000; }
+        .night-mode .exclude-night-mode{ filter: invert(100%); }
+        </style>
+    </head>
+    <body>
+        <div id="container">
+            <textarea placeholder="این یک ویرایشگر سادهٔ فارسی با قابلیت ذخیرهٔ حودکار متن در مرورگرتان است." style="background-color: #EAEAEA; font-size: 120%; width: 100%; height: 20em; font-family: 'Segoe UI', Tahoma, sans-seris;">متن</textarea>
+            <div style="font-size: 80%; margin: .5em">
+                <button onclick="superTool()">ابرابزار</button>
+                <button onclick="toggleNightMode()">حالت شب</button>
+            </div>
+            <script src="persiantools.js"></script>
+            <script>
+            function superTool() {
+                var text = document.querySelector('textarea').value;
+                text = persianTools.applyOrthography(text);
+                text = persianTools.applyZwnj(text);
+                text = persianTools.punctuation(text);
+                text = persianTools.toPersianDigits(text);
+                text = persianTools.toStandardPersianCharacters(text);
+                document.querySelector('textarea').value = text;
+            }
+
+            function toggleNightMode() {
+                if (document.body.classList.contains("night-mode"))
+                    document.body.classList.remove("night-mode")
+                else
+                    document.body.classList.add("night-mode")
+            }
+
+            document.addEventListener("DOMContentLoaded", function (event) {
+                document.querySelector('textarea').value = localStorage.getItem("text") || '';
+                if (localStorage.getItem("night-mode")) toggleNightMode();
+            });
+            
+            setInterval(function () {
+                localStorage.setItem("text", document.querySelector('textarea').value);
+                localStorage.setItem("night-mode", document.body.classList.contains("night-mode"));
+            }, 2000);
+            </script>
+        </div>
+    </body>
+</html>
