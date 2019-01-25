@@ -52,6 +52,7 @@ layout: default
 ## Music related
 * [Tuner / Metronome / Signal Generator](/extra/tuner.html) (mine)
 * Android Simple Synthesizer: [1](https://github.com/ebraminio/simplesynth) [2](https://github.com/ebraminio/oldsimplesynth) (mine)
+* [Setar intervals calculator](/extra/setar.html) (mine)
 * [midi protocol](https://www.midi.org/specifications/item/table-1-summary-of-midi-message)
 
 ## Blockchain
