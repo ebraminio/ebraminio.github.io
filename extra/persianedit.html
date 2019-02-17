@@ -11,7 +11,7 @@
     </head>
     <body>
         <div id="container">
-            <textarea placeholder="این یک ویرایشگر سادهٔ فارسی با قابلیت ذخیرهٔ حودکار متن در مرورگرتان است." style="background-color: #EAEAEA; font-size: 120%; width: 100%; height: 20em; font-family: 'Segoe UI', Tahoma, sans-seris;">متن</textarea>
+            <textarea placeholder="این یک ویرایشگر سادهٔ فارسی با قابلیت ذخیرهٔ خودکار متن در مرورگرتان است." style="background-color: #EAEAEA; font-size: 120%; width: 100%; height: 20em; font-family: 'Segoe UI', 'Noto Sans Arabic', Tahoma, sans-serif;">متن</textarea>
             <div style="font-size: 80%; margin: .5em">
                 <button onclick="superTool()">ابرابزار</button>
                 <button onclick="persianSortTextButton()">ترتیب الفبا</button>
@@ -30,27 +30,27 @@
             }
 
             function toggleNightMode() {
-                if (document.body.classList.contains("night-mode"))
-                    document.body.classList.remove("night-mode")
+                if (document.body.classList.contains('night-mode'))
+                    document.body.classList.remove('night-mode')
                 else
-                    document.body.classList.add("night-mode")
+                    document.body.classList.add('night-mode')
             }
 
             function dePersian(text) {
                 return text
-                    .replace(/ی/g, "ي")
-                    .replace(/ک/g, "ك")
-                    .replace(/ھ/g, "ه")
-                    .replace(/پ/g, "بی")
-                    .replace(/چ/g, "جی")
-                    .replace(/ڕ/g, "ری")
-                    .replace(/ژ/g, "زی")
-                    .replace(/ڤ/g, "فی")
-                    .replace(/ڵ/g, "لی")
-                    .replace(/گ/g, "كی")
-                    .replace(/ۆ/g, "وی")
-                    .replace(/ە/g, "هی")
-                    .replace(/ێ/g, "يي");
+                    .replace(/ی/g, 'ي')
+                    .replace(/ک/g, 'ك')
+                    .replace(/ھ/g, 'ه')
+                    .replace(/پ/g, 'بی')
+                    .replace(/چ/g, 'جی')
+                    .replace(/ڕ/g, 'ری')
+                    .replace(/ژ/g, 'زی')
+                    .replace(/ڤ/g, 'فی')
+                    .replace(/ڵ/g, 'لی')
+                    .replace(/گ/g, 'كی')
+                    .replace(/ۆ/g, 'وی')
+                    .replace(/ە/g, 'هی')
+                    .replace(/ێ/g, 'يي');
             }
 
             function persianSortText(text) {
@@ -72,14 +72,14 @@
                 editor.value = persianSortText(editor.value);
             }
 
-            document.addEventListener("DOMContentLoaded", function (event) {
-                document.querySelector('textarea').value = localStorage.getItem("text") || '';
-                if (localStorage.getItem("night-mode") === "true") toggleNightMode();
+            document.addEventListener('DOMContentLoaded', function (event) {
+                document.querySelector('textarea').value = localStorage.getItem('text') || '';
+                if (localStorage.getItem('night-mode') === 'true') toggleNightMode();
             });
             
             setInterval(function () {
-                localStorage.setItem("text", document.querySelector('textarea').value);
-                localStorage.setItem("night-mode", document.body.classList.contains("night-mode"));
+                localStorage.setItem('text', document.querySelector('textarea').value);
+                localStorage.setItem('night-mode', document.body.classList.contains('night-mode'));
             }, 2000);
             </script>
         </div>
