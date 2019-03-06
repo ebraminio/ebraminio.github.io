@@ -59,6 +59,11 @@ layout: default
 * [naivechain](https://medium.com/@lhartikk/a-blockchain-in-200-lines-of-code-963cc1cc0e54)
 * [naivecoin](https://github.com/conradoqg/naivecoin)
 
+## Compiler
+* [Build Your Own Lisp](http://www.buildyourownlisp.com/) - Learn C and build your own programming language in 1000 lines of code!
+* [c4](https://github.com/rswier/c4) - C in four functions
+* [C interpreter that interprets itself](https://github.com/lotabout/write-a-C-interpreter) - Write a simple interpreter of C. Inspired by c4 and largely based on it.
+
 ## Other topics
 * [Mining of Massive Datasets](http://www.mmds.org) (Big data)
 * [Software Testing](http://cs.gmu.edu/~offutt/softwaretest/)
