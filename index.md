@@ -64,6 +64,10 @@ layout: default
 * [c4](https://github.com/rswier/c4) - C in four functions
 * [C interpreter that interprets itself](https://github.com/lotabout/write-a-C-interpreter) - Write a simple interpreter of C. Inspired by c4 and largely based on it.
 
+## OS
+* [Linux Kernel Development](https://notes.shichao.io/lkd)
+* [The little book about OS development](https://littleosbook.github.io)
+
 ## Other topics
 * [Mining of Massive Datasets](http://www.mmds.org) (Big data)
 * [Software Testing](http://cs.gmu.edu/~offutt/softwaretest/)
@@ -76,3 +80,4 @@ layout: default
 * [curl pad.js.org &#124; node](http://pad.js.org) (mine)
 * [Eigendecomposition](/extra/eigendecomposition.slides.html) (mine)
 * APK decompile: [1](https://blog.bramp.net/post/2015/08/01/decompile-and-recompile-android-apk/), [2](https://ilikekillnerds.com/2014/09/how-to-decompile-and-compile-android-apks-on-a-mac-using-apktool/)
+* [Database Design](https://cstack.github.io/db_tutorial/)
