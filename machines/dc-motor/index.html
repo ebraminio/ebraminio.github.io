@@ -1,0 +1,83 @@
+<!DOCTYPE html>
+<!-- <style src="Chart.min.css"></style>
+<script src="Chart.min.js"></script> -->
+<div id="result" style="white-space: pre"></div>
+<div id="input">
+    <button onclick="calc()">Calculate</button>
+    <fieldset>
+        <legend>Tranformer rating</legend>
+        Full load roeque, T1: <input id="t1" value="30"><br>
+        Rotor Resistance, R: <input id="r" value=".2"><br>
+        Blocked Rotor reactance, X: <input id="x" value="1.0"><br>
+        Blocked rotor induced voltage, E: <input id="e" value="7.5"><br>
+        Full load slip, S1: <input id="s1" value="3.5">
+    </fieldset>
+</div>
+<script>
+    function val(id) { return +document.getElementById(id).value; }
+    function calc() {
+        'use strict';
+
+        var t1 = val('t1');
+        var r = val('r');
+        var x = val('x');
+        var e = val('e');
+        var s1 = val('s1');
+        
+        var x1 = (s1 / 100) * x;
+        var z1 = Math.sqrt(r * r + x1 * x1);
+        var f1 = r / z1; // f1 is rotor power factor at full load
+        var e1 = (s1 / 100) * e;
+        var i1 = e1 / x1;
+        let k = t1 / (i1 * f1); // k is torque constant
+
+        var result = [];
+        var data = [];
+        for (var s = 0; s <= 5; s += .5) {
+            var e2 = (s / 100) * e;
+            var x2 = (s / 100) * x;
+            var z2 = Math.sqrt(r * r + x2 * x2);
+            var i2 = e2 / z2;
+            var f2 = r / z2;
+            var t2 = k * i2 * f2;
+            var t2p = Math.floor(t2);
+            result.push(`${s}\t${i2}\t${f2}\t${t2p}`);
+            data.push({ x: s, y: t2p });
+        }
+        for (var s = 10; s <= 100; s += 10) {
+            var e2 = (s / 100) * e;
+            var x2 = (s / 100) * x;
+            var z2 = Math.sqrt(r * r + x2 * x2);
+            var i2 = e2 / z2;
+            var f2 = r / z2;
+            var t2 = k * i2 * f2;
+            var t2p = Math.floor(t2);
+            result.push(`${s}\t${i2}\t${f2}\t${t2p}`);
+            data.push({ x: s, y: t2p });
+        }
+
+        document.getElementById('input').innerHTML = '';
+        document.getElementById('result').innerHTML = `
+            Slip    Rotor current   Rotor PF    Torque
+            ${result.join('\n')}
+
+            Starting torque is ${t2} lb-ft
+            Starting rotor current is ${i2} ampers
+
+        `.split('\n').map(x => x.trim()).join('\n').trim();
+
+        // console.log(data);
+
+        // var ctx = document.getElementById('canvas').getContext('2d');
+        // window.myLine = new Chart(ctx, {
+		// 	type: 'line',
+		// 	data: {
+		// 		datasets: {
+        //             data: [2, 2, 10, 30, 20, 20]
+        //         }
+        //     }
+		// });
+		// window.myLine.update();
+    }
+</script>
+<canvas id="canvas"></canvas>
