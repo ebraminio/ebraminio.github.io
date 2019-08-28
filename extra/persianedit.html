@@ -15,6 +15,7 @@
             <div style="font-size: 80%; margin: .5em">
                 <button onclick="superTool()">ابرابزار</button>
                 <button onclick="persianSortTextButton()">ترتیب الفبا</button>
+                <button onclick="copyToClipboard()">کپی</button>
                 <button onclick="toggleNightMode()">حالت شب</button>
             </div>
             <script src="persiantools.js"></script>
@@ -70,6 +71,11 @@
             function persianSortTextButton() {
                 var editor = document.querySelector('textarea');
                 editor.value = persianSortText(editor.value);
+            }
+
+            function copyToClipboard() {
+                document.querySelector('textarea').select();
+                document.execCommand('copy');
             }
 
             document.addEventListener('DOMContentLoaded', function (event) {
