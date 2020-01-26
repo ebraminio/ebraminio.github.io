@@ -1,6 +1,7 @@
 <!DOCTYPE html>
 <html manifest="application.appcache" dir="rtl" lang="fa">
     <head>
+        <title>ابزار ویرایش</title>
         <style>
         body { background-color:#EEEEEE; }
         #container { margin: 2em; padding: 2em; }
@@ -14,6 +15,7 @@
             <textarea placeholder="این یک ویرایشگر سادهٔ فارسی با قابلیت ذخیرهٔ خودکار متن در مرورگرتان است." style="background-color: #EAEAEA; font-size: 120%; width: 100%; height: 20em; font-family: 'Segoe UI', 'Noto Sans Arabic', Tahoma, sans-serif;">متن</textarea>
             <div style="font-size: 80%; margin: .5em">
                 <button onclick="superTool()">ابرابزار</button>
+                <button onclick="persianDigits()">اعداد فارسی</button>
                 <button onclick="persianSortTextButton()">ترتیب الفبا</button>
                 <button onclick="copyToClipboard()">کپی</button>
                 <button onclick="toggleNightMode()">حالت شب</button>
@@ -25,9 +27,12 @@
                 text = persianTools.applyOrthography(text);
                 text = persianTools.applyZwnj(text);
                 text = persianTools.punctuation(text);
-                text = persianTools.toPersianDigits(text);
                 text = persianTools.toStandardPersianCharacters(text);
                 document.querySelector('textarea').value = text;
+            }
+
+            function persianDigits() {
+                document.querySelector('textarea').value = persianTools.toPersianDigits(document.querySelector('textarea').value);
             }
 
             function toggleNightMode() {

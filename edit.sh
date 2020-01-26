@@ -21,5 +21,5 @@ title: "$1"
 EOF
 fi
 
-sleep 1 && open http://127.0.0.1:9090/edit.html#$POST &
+sleep 1 && xdg-open http://127.0.0.1:9090/edit.html#$POST &
 pad --local --replace --timeout=-1
