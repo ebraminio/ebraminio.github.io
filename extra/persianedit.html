@@ -17,6 +17,7 @@
                 <button onclick="superTool()">ابرابزار</button>
                 <button onclick="persianDigits()">اعداد فارسی</button>
                 <button onclick="persianSortTextButton()">ترتیب الفبا</button>
+                <button onclick="uriDecode()">تبدیل از درصدی</button>
                 <button onclick="copyToClipboard()">کپی</button>
                 <button onclick="toggleNightMode()">حالت شب</button>
             </div>
@@ -76,6 +77,11 @@
             function persianSortTextButton() {
                 var editor = document.querySelector('textarea');
                 editor.value = persianSortText(editor.value);
+            }
+
+            function uriDecode() {
+                var editor = document.querySelector('textarea');
+                editor.value = decodeURI(editor.value.replace(/%20/g, '\u200c\u200d\u200c')).replace(/\u200c\u200d\u200c/g, '%20');
             }
 
             function copyToClipboard() {
