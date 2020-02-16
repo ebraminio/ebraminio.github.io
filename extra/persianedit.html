@@ -20,9 +20,42 @@
                 <button onclick="uriDecode()">تبدیل از درصدی</button>
                 <button onclick="copyToClipboard()">کپی</button>
                 <button onclick="toggleNightMode()">حالت شب</button>
+                <button id="replaceToolButton" onclick="showReplaceTool()">ابزار جایگزینی</button>
+                <span id="replaceTool" style="display: none;">
+                    <input id="replace-from" placeholder="از">
+                    <input id="replace-to" placeholder="به">
+                    <button onclick="applyReplace()">اعمال</button>
+                    <label><input id="replace-isregex" type="checkbox"> عبارت باقاعده</label>
+                    <span onclick="hideReplaceTool()" style="cursor: default;">❌</span>
+                </span>
             </div>
             <script src="persiantools.js"></script>
             <script>
+            function showReplaceTool() {
+                document.getElementById('replaceToolButton').style.display = 'none';
+                document.getElementById('replaceTool').style.display = 'inline';
+            }
+
+            function hideReplaceTool() {
+                document.getElementById('replaceToolButton').style.display = 'inline';
+                document.getElementById('replaceTool').style.display = 'none';
+            }
+
+            // stackoverflow.com/a/6969486
+            function escapeRegExp(str) {
+                return str.replace(/[\-\[\]\/\{\}\(\)\*\+\?\.\\\^\$\|]/g, "\\$&");
+            }
+
+            function applyReplace() {
+                var pattern = document.getElementById('replace-from').value;
+                if (!document.getElementById('replace-isregex').checked)
+                    pattern = escapeRegExp(pattern);
+                pattern = new RegExp(pattern, 'g');
+                var replaceValue = document.getElementById('replace-to').value;
+                document.querySelector('textarea').value =
+                    document.querySelector('textarea').value.replace(pattern, replaceValue);
+            }
+
             function superTool() {
                 var text = document.querySelector('textarea').value;
                 text = persianTools.applyOrthography(text);
