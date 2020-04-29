@@ -1,36 +1,52 @@
 <!DOCTYPE html>
 <html manifest="application.appcache" dir="rtl" lang="fa">
-    <head>
-        <title>ابزار ویرایش</title>
-        <style>
-        body { background-color:#EEEEEE; }
-        #container { margin: 2em; padding: 2em; }
+
+<head>
+    <title>ابزار ویرایش</title>
+    <style>
+        body {
+            background-color: #EEEEEE;
+        }
+        
+        #container {
+            margin: 2em;
+            padding: 2em;
+        }
         /* Night mode from: https://codepen.io/gijo-varghese/pen/xrxgJX */
-        .night-mode { filter: invert(100%); background: #000; }
-        .night-mode .exclude-night-mode{ filter: invert(100%); }
-        </style>
-    </head>
-    <body>
-        <div id="container">
-            <textarea placeholder="این یک ویرایشگر سادهٔ فارسی با قابلیت ذخیرهٔ خودکار متن در مرورگرتان است." style="background-color: #EAEAEA; font-size: 120%; width: 100%; height: 20em; font-family: 'Segoe UI', 'Noto Sans Arabic', Tahoma, sans-serif;">متن</textarea>
-            <div style="font-size: 80%; margin: .5em">
-                <button onclick="superTool()">ابرابزار</button>
-                <button onclick="persianDigits()">اعداد فارسی</button>
-                <button onclick="persianSortTextButton()">ترتیب الفبا</button>
-                <button onclick="uriDecode()">تبدیل از درصدی</button>
-                <button onclick="copyToClipboard()">کپی</button>
-                <button onclick="toggleNightMode()">حالت شب</button>
-                <button id="replaceToolButton" onclick="showReplaceTool()">ابزار جایگزینی</button>
-                <span id="replaceTool" style="display: none;">
+        
+        .night-mode {
+            filter: invert(100%);
+            background: #000;
+        }
+        
+        .night-mode .exclude-night-mode {
+            filter: invert(100%);
+        }
+    </style>
+</head>
+
+<body>
+    <div id="container">
+        <textarea placeholder="این یک ویرایشگر سادهٔ فارسی با قابلیت ذخیرهٔ خودکار متن در مرورگرتان است." id="textarea" oninput="updateCounters()" onchange="updateCounters()" style="background-color: #EAEAEA; font-size: 120%; width: 100%; height: 20em; font-family: 'Segoe UI', 'Noto Sans Arabic', Tahoma, sans-serif;">متن</textarea>
+        <div style="font-size: 80%; margin: .5em">
+            <button onclick="superTool()">ابرابزار</button>
+            <button onclick="persianDigits()">اعداد فارسی</button>
+            <button onclick="persianSortTextButton()">ترتیب الفبا</button>
+            <button onclick="uriDecode()">تبدیل از درصدی</button>
+            <button onclick="copyToClipboard()">کپی</button>
+            <button onclick="toggleNightMode()">حالت شب</button>
+            <button id="replaceToolButton" onclick="showReplaceTool()">ابزار جایگزینی</button>
+            <span id="replaceTool" style="display: none;">
                     <input id="replace-from" placeholder="از">
                     <input id="replace-to" placeholder="به">
                     <button onclick="applyReplace()">اعمال</button>
                     <label><input id="replace-isregex" type="checkbox"> عبارت باقاعده</label>
                     <span onclick="hideReplaceTool()" style="cursor: default;">❌</span>
-                </span>
-            </div>
-            <script src="persiantools.js"></script>
-            <script>
+            </span>
+            <span style="font-size: 70%; margin: .5em" id="stats"></div>
+        </div>
+        <script src="persiantools.js"></script>
+        <script>
             function showReplaceTool() {
                 document.getElementById('replaceToolButton').style.display = 'none';
                 document.getElementById('replaceTool').style.display = 'inline';
@@ -52,21 +68,20 @@
                     pattern = escapeRegExp(pattern);
                 pattern = new RegExp(pattern, 'g');
                 var replaceValue = document.getElementById('replace-to').value;
-                document.querySelector('textarea').value =
-                    document.querySelector('textarea').value.replace(pattern, replaceValue);
+                textarea.value = textarea.value.replace(pattern, replaceValue);
             }
 
             function superTool() {
-                var text = document.querySelector('textarea').value;
+                var text = textarea.value;
                 text = persianTools.applyOrthography(text);
                 text = persianTools.applyZwnj(text);
                 text = persianTools.punctuation(text);
                 text = persianTools.toStandardPersianCharacters(text);
-                document.querySelector('textarea').value = text;
+                textarea.value = text;
             }
 
             function persianDigits() {
-                document.querySelector('textarea').value = persianTools.toPersianDigits(document.querySelector('textarea').value);
+                textarea.value = persianTools.toPersianDigits(textarea.value);
             }
 
             function toggleNightMode() {
@@ -94,7 +109,7 @@
             }
 
             function persianSortText(text) {
-                return text.split('\n').sort(function (x, y) {
+                return text.split('\n').sort(function(x, y) {
                     var keyX = dePersian(x),
                         keyY = dePersian(y);
                     if (keyX < keyY) {
@@ -108,30 +123,35 @@
             }
 
             function persianSortTextButton() {
-                var editor = document.querySelector('textarea');
-                editor.value = persianSortText(editor.value);
+                textarea.value = persianSortText(textarea.value);
             }
 
             function uriDecode() {
-                var editor = document.querySelector('textarea');
-                editor.value = decodeURI(editor.value.replace(/%20/g, '\u200c\u200d\u200c')).replace(/\u200c\u200d\u200c/g, '%20');
+                textarea.value = decodeURI(textarea.value.replace(/%20/g, '\u200c\u200d\u200c')).replace(/\u200c\u200d\u200c/g, '%20');
             }
 
             function copyToClipboard() {
-                document.querySelector('textarea').select();
+                textarea.select();
                 document.execCommand('copy');
             }
 
-            document.addEventListener('DOMContentLoaded', function (event) {
-                document.querySelector('textarea').value = localStorage.getItem('text') || '';
+            document.addEventListener('DOMContentLoaded', function(event) {
+                textarea.value = localStorage.getItem('text') || '';
                 if (localStorage.getItem('night-mode') === 'true') toggleNightMode();
             });
-            
-            setInterval(function () {
-                localStorage.setItem('text', document.querySelector('textarea').value);
+
+            setInterval(function() {
+                localStorage.setItem('text', textarea.value);
                 localStorage.setItem('night-mode', document.body.classList.contains('night-mode'));
             }, 2000);
-            </script>
-        </div>
-    </body>
+
+            function updateCounters() {
+                stats.innerHTML = 'نویسه: ' + [...textarea.value].length.toLocaleString('fa') + '، کلمه: ' +
+                    textarea.value.replace(/\s+/g, ' ').trim().split(' ').length.toLocaleString('fa');
+            }
+            updateCounters();
+        </script>
+    </div>
+</body>
+
 </html>
