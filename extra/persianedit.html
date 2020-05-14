@@ -146,8 +146,9 @@
             }, 2000);
 
             function updateCounters() {
-                stats.innerHTML = 'نویسه: ' + [...textarea.value].length.toLocaleString('fa') + '، کلمه: ' +
-                    textarea.value.replace(/\s+/g, ' ').trim().split(' ').length.toLocaleString('fa');
+                stats.innerHTML = 'نویسه: ' + [...textarea.value].length.toLocaleString('fa') +
+                    '، کلمه: ' + textarea.value.replace(/\s+/g, ' ').trim().split(' ').length.toLocaleString('fa') +
+                    '، سطر: ' + textarea.value.trim().split('\n').length.toLocaleString('fa');
             }
             updateCounters();
         </script>
