@@ -1,0 +1,53 @@
+<canvas id="canvas" width=256 height=240></canvas>
+<script>
+let wasm;
+
+function update(nes) {
+    const heapu8 = new Uint8Array(wasm.instance.exports.memory.buffer);
+    const heapStart = wasm.instance.exports.__heap_base.value;
+    heapu8.set(nes, heapStart);
+    wasm.instance.exports.init(heapStart);
+}
+
+fetch('nes.wasm').then(x => x.arrayBuffer()).then(WebAssembly.instantiate).then(result => {
+    wasm = result;
+    wasm.instance.exports.memory.grow(40); // each page is 64kb
+
+    const pixelsAddress = wasm.instance.exports.pixels.value;
+    const heapu8 = new Uint8Array(wasm.instance.exports.memory.buffer);
+    const ctx = canvas.getContext('2d');
+    const imageData = ctx.createImageData(256, 240);
+    const frame = heapu8.subarray(pixelsAddress, pixelsAddress + 256 * 240 * 4);
+    requestAnimationFrame(function render() {
+        wasm.instance.exports.render_frame();
+        imageData.data.set(frame);
+        ctx.putImageData(imageData, 0, 0);
+        requestAnimationFrame(render);
+    });
+
+    fetch('Super_mario_brothers.nes').then(x => x.arrayBuffer()).then(result => {
+        update(new Uint8Array(result));
+    });
+});
+
+document.addEventListener('dragover', e => {
+    e.stopPropagation(); e.preventDefault();
+}, false);
+document.addEventListener('dragleave', e => {
+    e.stopPropagation(); e.preventDefault();
+}, false);
+document.addEventListener('drop', e => {
+    e.stopPropagation(); e.preventDefault();
+    handleUpdate(e.dataTransfer.files[0]);
+});
+function handleUpdate(file) {
+    help.style.display = 'none';
+    if (!file) return;
+    document.title = file.name;
+    const reader = new FileReader();
+    reader.addEventListener('load', () => update(new Uint8Array(reader.result)));
+    reader.readAsArrayBuffer(file);
+}
+</script>
+
+<p id="help"><small>(supports .nes files drag and drop)</small></p>

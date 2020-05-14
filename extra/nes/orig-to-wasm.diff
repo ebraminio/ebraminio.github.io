@@ -1,0 +1,331 @@
+--- nesemu1-orig.cc	2020-05-14 16:11:02.229482296 +0430
++++ nesemu1.cc	2020-05-14 16:09:40.140729034 +0430
+@@ -1,22 +1,35 @@
+-#include <stdint.h>
+-#include <signal.h>
+-#include <assert.h>
+-#include <cmath>
++// modified version of nesemu1 but without SDL, STL and C stdlib
++// Downloaded from https://bisqwit.iki.fi/jutut/kuvat/programming_examples/nesemu1/nesemu1.cc
+ 
+-#include <SDL.h>
+-#include <vector>
++// clang -fno-threadsafe-statics -fno-exceptions nesemu1.cc -Wall -W -pedantic -Ofast \
++//   -nostdinc -nostdlib -Wl,--no-entry -Wl,--strip-all -Wl,--lto-O3 -Wl,--gc-sections \
++//   -flto --target=wasm32 -Wl,--export=render_frame -Wl,--export=init -Wl,--export=pixels \
++//   -Wl,--export=__heap_base -o nes.wasm
+ 
+ /* NESEMU1 : EMULATOR FOR THE NINTENDO ENTERTAINMENT SYSTEM (R) ARCHITECTURE  */
+ /* Written by and copyright (C) 2011  Joel Yliluoma - http://iki.fi/bisqwit/  */
+ /* Trademarks are owned by their respective owners. Lawyers love tautologies. */
+ 
+-static const char* inputfn = "input.fmv";
++// static const char* inputfn = "input.fmv";
+ 
+ // Integer types
+-typedef uint_least32_t u32;
+-typedef uint_least16_t u16;
+-typedef uint_least8_t   u8;
+-typedef  int_least8_t   s8;
++typedef __UINT8_TYPE__ u8;
++typedef __UINT16_TYPE__ u16;
++typedef __UINT32_TYPE__ u32;
++typedef __INT8_TYPE__ s8;
++typedef __SIZE_TYPE__ size_t;
++
++// memcpy use is very light, no need for better optimizations
++void *memcpy(void *__restrict d, const void *__restrict s, size_t n)
++{
++    unsigned char *d_byte = (unsigned char *) d;
++    const unsigned char *s_byte = (const unsigned char *) s;
++    while (n > 0) {
++        *(d_byte++) = *(s_byte++);
++        n--;
++    }
++    return d;
++}
+ 
+ // Bitfield utilities
+ template<unsigned bitno, unsigned nbits=1, typename T=u8>
+@@ -35,17 +48,27 @@
+     unsigned operator++ (int) { unsigned r = *this; ++*this; return r; }
+ };
+ 
+-namespace IO
++extern "C" u32 pixels[256 * 240 * 4] = {0};
++bool frame_is_ready = false;
++
++#define M_PI 3.14159265358979323846
++
++/* NOT IMPLEMENTED */
++float sin(float x)
+ {
+-    SDL_Surface *s;
+-    void Init()
+-    {
+-        SDL_Init(SDL_INIT_VIDEO);
+-        SDL_InitSubSystem(SDL_INIT_VIDEO);
+-        s = SDL_SetVideoMode(256, 240, 32,0);
+-        signal(SIGINT, SIG_DFL);
+-    }
++    return 0;
++}
++float cos(float x)
++{
++    return 0;
++}
++float pow(float x, float y)
++{
++    return x;
++}
+ 
++namespace IO
++{
+     void PutPixel(unsigned px,unsigned py, unsigned pixel, int offset)
+     {
+         // The input value is a NES color index (with de-emphasis bits).
+@@ -74,11 +97,11 @@
+                     int b = 40 + s[(c > 12*((c+8+p)%12 < 6)) + 2*!(0451326 >> p/2*3 & e) + l];
+                     // Ideal TV NTSC demodulator:
+                     y += b;
+-                    i += b * int(std::cos(M_PI * p / 6) * 5909);
+-                    q += b * int(std::sin(M_PI * p / 6) * 5909);
++                    i += b * int(cos(M_PI * p / 6) * 5909);
++                    q += b * int(sin(M_PI * p / 6) * 5909);
+                 }
+                 // Convert the YIQ color into RGB
+-                auto gammafix = [=](float f) { return f <= 0.f ? 0.f : std::pow(f, 2.2f / 1.8f); };
++                auto gammafix = [=](float f) { return f <= 0.f ? 0.f : pow(f, 2.2f / 1.8f); };
+                 auto clamp    = [](int v) { return v>255 ? 255 : v; };
+                 // Store color at subpixel precision
+                 if(u==2) palette[o][p1][p0] += 0x10000*clamp(255 * gammafix(y/1980.f + i* 0.947f/9e6f + q* 0.624f/9e6f));
+@@ -86,12 +109,15 @@
+                 if(u==0) palette[o][p1][p0] += 0x00001*clamp(255 * gammafix(y/1980.f + i*-1.109f/9e6f + q* 1.709f/9e6f));
+             }
+         // Store the RGB color into the frame buffer.
+-        ((u32*) s->pixels) [py * 256 + px] = palette[offset][prev%64][pixel];
++        // ((u32*) s->pixels) [py * 256 + px] = palette[offset][prev%64][pixel];
++        pixels[py * 256 + px] = palette[offset][prev%64][pixel];
++        pixels[py * 256 + px] |= 0xFF000000; // needed for canvas
++
+         prev = pixel;
+     }
+     void FlushScanline(unsigned py)
+     {
+-        if(py == 239) SDL_Flip(s);
++        if (py == 239) frame_is_ready = true;
+     }
+ 
+     int joy_current[2]={0,0}, joy_next[2]={0,0}, joypos[2]={0,0};
+@@ -109,7 +135,10 @@
+ 
+ namespace GamePak
+ {
+-    std::vector<u8> ROM, VRAM(0x2000);
++    u8 ROM[0x4000 * 10] = {0};
++    unsigned ROM_size;
++    u8 VRAM[0x4000 * 10] = {0};
++    unsigned VRAM_size;
+     unsigned mappernum;
+     const unsigned VROM_Granularity = 0x0400, VROM_Pages = 0x2000 / VROM_Granularity;
+     const unsigned ROM_Granularity  = 0x2000, ROM_Pages = 0x10000 / ROM_Granularity;
+@@ -118,33 +147,33 @@
+     unsigned char* Vbanks[VROM_Pages] = {};
+     unsigned char *Nta[4] = { NRAM+0x0000, NRAM+0x0400, NRAM+0x0000, NRAM+0x0400 };
+ 
+-    template<unsigned npages,unsigned char*(&b)[npages], std::vector<u8>& r, unsigned granu>
+-    static void SetPages(unsigned size, unsigned baseaddr, unsigned index)
++    template<unsigned npages,unsigned char*(&b)[npages], unsigned granu>
++    static void SetPages(u8 *r, unsigned r_size, unsigned size, unsigned baseaddr, unsigned index)
+     {
+-        for(unsigned v = r.size() + index * size,
++        for(unsigned v = r_size + index * size,
+                      p = baseaddr / granu;
+                      p < (baseaddr + size) / granu && p < npages;
+                      ++p, v += granu)
+-            b[p] = &r[v % r.size()];
++            b[p] = &r[v % r_size];
+     }
+-    auto& SetROM  = SetPages< ROM_Pages, banks, ROM, ROM_Granularity>;
+-    auto& SetVROM = SetPages<VROM_Pages,Vbanks,VRAM,VROM_Granularity>;
++    auto& SetROM  = SetPages< ROM_Pages, banks, ROM_Granularity>;
++    auto& SetVROM = SetPages<VROM_Pages,Vbanks,VROM_Granularity>;
+ 
+     u8 Access(unsigned addr, u8 value, bool write)
+     {
+         if(write && addr >= 0x8000 && mappernum == 7) // e.g. Rare games
+         {
+-            SetROM(0x8000, 0x8000, (value&7));
++            SetROM(ROM, ROM_size, 0x8000, 0x8000, (value&7));
+             Nta[0] = Nta[1] = Nta[2] = Nta[3] = &NRAM[0x400 * ((value>>4)&1)];
+         }
+         if(write && addr >= 0x8000 && mappernum == 2) // e.g. Rockman, Castlevania
+         {
+-            SetROM(0x4000, 0x8000, value);
++            SetROM(ROM, ROM_size, 0x4000, 0x8000, value);
+         }
+         if(write && addr >= 0x8000 && mappernum == 3) // e.g. Kage, Solomon's Key
+         {
+             value &= Access(addr,0,false); // Simulate bus conflict
+-            SetVROM(0x2000, 0x0000, (value&3));
++            SetVROM(VRAM, VRAM_size, 0x2000, 0x0000, (value&3));
+         }
+         if(write && addr >= 0x8000 && mappernum == 1) // e.g. Rockman 2, Simon's Quest
+         {
+@@ -158,20 +187,20 @@
+                 cache = counter = 0;
+                 static const u8 sel[4][4] = { {0,0,0,0}, {1,1,1,1}, {0,1,0,1}, {0,0,1,1} };
+                 for(unsigned m=0; m<4; ++m) Nta[m] = &NRAM[0x400 * sel[regs[0]&3][m]];
+-                SetVROM(0x1000, 0x0000, ((regs[0]&16) ? regs[1] : ((regs[1]&~1)+0)));
+-                SetVROM(0x1000, 0x1000, ((regs[0]&16) ? regs[2] : ((regs[1]&~1)+1)));
++                SetVROM(VRAM, VRAM_size, 0x1000, 0x0000, ((regs[0]&16) ? regs[1] : ((regs[1]&~1)+0)));
++                SetVROM(VRAM, VRAM_size, 0x1000, 0x1000, ((regs[0]&16) ? regs[2] : ((regs[1]&~1)+1)));
+                 switch( (regs[0]>>2)&3 )
+                 {
+                     case 0: case 1:
+-                        SetROM(0x8000, 0x8000, (regs[3] & 0xE) / 2);
++                        SetROM(ROM, ROM_size, 0x8000, 0x8000, (regs[3] & 0xE) / 2);
+                         break;
+                     case 2:
+-                        SetROM(0x4000, 0x8000, 0);
+-                        SetROM(0x4000, 0xC000, (regs[3] & 0xF));
++                        SetROM(ROM, ROM_size, 0x4000, 0x8000, 0);
++                        SetROM(ROM, ROM_size, 0x4000, 0xC000, (regs[3] & 0xF));
+                         break;
+                     case 3:
+-                        SetROM(0x4000, 0x8000, (regs[3] & 0xF));
+-                        SetROM(0x4000, 0xC000, ~0);
++                        SetROM(ROM, ROM_size, 0x4000, 0x8000, (regs[3] & 0xF));
++                        SetROM(ROM, ROM_size, 0x4000, 0xC000, ~0);
+                         break;
+                 }
+             }
+@@ -181,8 +210,8 @@
+     }
+     void Init()
+     {
+-        SetVROM(0x2000, 0x0000, 0);
+-        for(unsigned v=0; v<4; ++v) SetROM(0x4000, v*0x4000, v==3 ? -1 : 0);
++        SetVROM(VRAM, VRAM_size, 0x2000, 0x0000, 0);
++        for(unsigned v=0; v<4; ++v) SetROM(ROM, ROM_size, 0x4000, v*0x4000, v==3 ? -1 : 0);
+     }
+ }
+ 
+@@ -504,19 +533,21 @@
+                     // I cheat here: I did not bother to learn how to use SDL events,
+                     // so I simply read button presses from a movie file, which happens
+                     // to be a TAS, rather than from the keyboard or from a joystick.
+-                    static FILE* fp = fopen(inputfn, "rb");
+-                    if(fp)
+-                    {
+-                        static unsigned ctrlmask = 0;
+-                        if(!ftell(fp))
+-                        {
+-                            fseek(fp, 0x05, SEEK_SET);
+-                            ctrlmask = fgetc(fp);
+-                            fseek(fp, 0x90, SEEK_SET); // Famtasia Movie format.
+-                        }
+-                        if(ctrlmask & 0x80) { IO::joy_next[0] = fgetc(fp); if(feof(fp)) IO::joy_next[0] = 0; }
+-                        if(ctrlmask & 0x40) { IO::joy_next[1] = fgetc(fp); if(feof(fp)) IO::joy_next[1] = 0; }
+-                    }
++
++                    // static FILE* fp = fopen(inputfn, "rb");
++                    // if(fp)
++                    // {
++                    //     static unsigned ctrlmask = 0;
++                    //     if(!ftell(fp))
++                    //     {
++                    //         fseek(fp, 0x05, SEEK_SET);
++                    //         ctrlmask = fgetc(fp);
++                    //         fseek(fp, 0x90, SEEK_SET); // Famtasia Movie format.
++                    //     }
++                    //     if(ctrlmask & 0x80) { IO::joy_next[0] = fgetc(fp); if(feof(fp)) IO::joy_next[0] = 0; }
++                    //     if(ctrlmask & 0x40) { IO::joy_next[1] = fgetc(fp); if(feof(fp)) IO::joy_next[1] = 0; }
++                    // }
++
+                     // Set vblank flag
+                     VBlankState = 2;
+             }
+@@ -723,9 +754,12 @@
+         // so I simply use a combination of external programs for outputting the audio.
+         // Hooray for Unix principles! A/V sync will be ensured in post-process.
+         //return; // Disable sound because already device is in use
+-        static FILE* fp = popen("resample mr1789800 r48000 | aplay -fdat 2>/dev/null", "w");
+-        fputc(sample, fp);
+-        fputc(sample/256, fp);
++
++        // static FILE* fp = popen("./resample mr1789800 r48000 | aplay -fdat 2>/dev/null", "w");
++        // fputc(sample, fp);
++        // fputc(sample/256, fp);
++
++        // printf("%d %d\n", sample, sample/256);
+     }
+ }
+ 
+@@ -904,44 +938,41 @@
+     }
+ }
+ 
+-int main(int/*argc*/, char** argv)
++extern "C" {
++void render_frame()
+ {
+-    // Open the ROM file specified on commandline
+-    FILE* fp = fopen(argv[1], "rb");
+-    inputfn = argv[2];
++    while (!frame_is_ready) CPU::Op();
++    frame_is_ready = false;
++}
+ 
++void init(const char *nes)
++{
+     // Read the ROM file header
+-    assert(fgetc(fp)=='N' && fgetc(fp)=='E' && fgetc(fp)=='S' && fgetc(fp)=='\32');
+-    u8 rom16count = fgetc(fp);
+-    u8 vrom8count = fgetc(fp);
+-    u8 ctrlbyte   = fgetc(fp);
+-    u8 mappernum  = fgetc(fp) | (ctrlbyte>>4);
+-    fgetc(fp);fgetc(fp);fgetc(fp);fgetc(fp);fgetc(fp);fgetc(fp);fgetc(fp);fgetc(fp);
++    if (nes[0] != 'N' && nes[1] != 'E' && nes[2] != 'S' && nes[3] != '\32')
++        return;
++    u8 rom16count = nes[4];
++    u8 vrom8count = nes[5];
++    u8 ctrlbyte   = nes[6];
++    u8 mappernum  = nes[7] | (ctrlbyte>>4);
+     if(mappernum >= 0x40) mappernum &= 15;
+     GamePak::mappernum = mappernum;
+ 
+     // Read the ROM data
+-    if(rom16count) GamePak::ROM.resize(rom16count * 0x4000);
+-    if(vrom8count) GamePak::VRAM.resize(vrom8count * 0x2000);
+-    fread(&GamePak::ROM[0], rom16count, 0x4000, fp);
+-    fread(&GamePak::VRAM[0], vrom8count, 0x2000, fp);
++    GamePak::ROM_size = rom16count * 0x4000;
++    // GamePak::ROM = (u8 *) calloc(GamePak::ROM_size, sizeof (u8));
++    GamePak::VRAM_size = (vrom8count ? vrom8count : 1) * 0x2000;
++    // GamePak::VRAM = (u8 *) calloc(GamePak::VRAM_size, sizeof (u8));
++    memcpy(GamePak::ROM, nes + 16, GamePak::ROM_size);
++    memcpy(GamePak::VRAM, nes + 16 + GamePak::ROM_size, vrom8count * 0x2000);
+ 
+-    fclose(fp);
+-    printf("%u * 16kB ROM, %u * 8kB VROM, mapper %u, ctrlbyte %02X\n", rom16count, vrom8count, mappernum, ctrlbyte);
++    // printf("%u * 16kB ROM, %u * 8kB VROM, mapper %u, ctrlbyte %02X\n", rom16count, vrom8count, mappernum, ctrlbyte);
+ 
+     // Start emulation
+     GamePak::Init();
+-    IO::Init();
+     PPU::reg.value = 0;
+ 
+     // Pre-initialize RAM the same way as FCEUX does, to improve TAS sync.
+     for(unsigned a=0; a<0x800; ++a)
+         CPU::RAM[a] = (a&4) ? 0xFF : 0x00;
+-
+-    // Run the CPU until the program is killed.
+-    for(;;) CPU::Op();
+ }
+-
+-
+-
+-
++}
+\ No newline at end of file
