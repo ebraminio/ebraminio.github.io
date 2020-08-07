@@ -10,6 +10,8 @@ layout: default
   {% endfor %}
 </ul>
 
+<details>
+<summary>Outdated useful links</summary>
 ----
 
 ## TrueType/OpenType/AAT related quick links
@@ -81,3 +83,4 @@ layout: default
 * [Eigendecomposition](/extra/eigendecomposition.slides.html) (mine)
 * APK decompile: [1](https://blog.bramp.net/post/2015/08/01/decompile-and-recompile-android-apk/), [2](https://ilikekillnerds.com/2014/09/how-to-decompile-and-compile-android-apks-on-a-mac-using-apktool/)
 * [Database Design](https://cstack.github.io/db_tutorial/)
+</details>
