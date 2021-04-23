@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html manifest="application.appcache" dir="rtl" lang="fa">
-
 <head>
+    <meta charset=utf8>
     <title>ابزار ویرایش</title>
     <style>
         body {
@@ -49,19 +49,56 @@
         </div>
         <script src="persiantools.js"></script>
         <script>
+            /// Open/Save file section
+            // variables
             let fileHandle;
+            // fallback mechanism variables
+            let urlToSave;
+            let originalFileName = 'file.txt';
             async function openFile() {
-                [fileHandle] = await window.showOpenFilePicker();
-                const file = await fileHandle.getFile();
-                textArea.value = await file.text();
+                if (window.showOpenFilePicker) {
+                    [fileHandle] = await window.showOpenFilePicker();
+                    const file = await fileHandle.getFile();
+                    textArea.value = await file.text();
+                } else {
+                    // fallback mechanism
+                    let input = document.createElement('input');
+                    input.type = 'file';
+                    input.onchange = function () {
+                        let file = input.files[0];
+                        originalFileName = file.name;
+                        let contents = file.arrayBuffer().then(function (arrayBuffer) {
+                            textArea.value = new TextDecoder().decode(arrayBuffer);
+                        });
+                    }
+                    input.click();
+                }
             }
 
             async function saveFile() {
-                if (fileHandle === undefined) [fileHandle] = await window.showOpenFilePicker();
-                const writable = await fileHandle.createWritable();
-                await writable.write(textArea.value);
-                await writable.close();
+                if (window.showOpenFilePicker) {
+                    if (fileHandle === undefined) [fileHandle] = await window.showOpenFilePicker();
+                    const writable = await fileHandle.createWritable();
+                    await writable.write(textArea.value);
+                    await writable.close();
+                } else {
+                    // fallback mechanism
+                    var a = document.createElement('a');
+                    var url = new Blob([textArea.value], { type: 'text/plain' })
+                    a.href = URL.createObjectURL(url);
+                    a.setAttribute('download', originalFileName);
+                    a.click();
+                    URL.revokeObjectURL(urlToSave);
+                }
             }
+
+            document.addEventListener('keydown', function (e) {
+                if ((e.ctrlKey || e.metaKey) && e.which === 83/*s = 83*/) {
+                    e.preventDefault();
+                    saveFile();
+                }
+            });
+            /// End of the section
 
             function showReplaceTool() {
                 document.getElementById('replaceToolButton').style.display = 'none';
