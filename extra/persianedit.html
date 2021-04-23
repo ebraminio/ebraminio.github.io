@@ -27,8 +27,10 @@
 
 <body>
     <div id="container">
-        <textarea placeholder="این یک ویرایشگر سادهٔ فارسی با قابلیت ذخیرهٔ خودکار متن در مرورگرتان است." id="textarea" oninput="updateCounters()" onchange="updateCounters()" style="background-color: #EAEAEA; font-size: 120%; width: 100%; height: 20em; font-family: 'Segoe UI', 'Noto Sans Arabic', Tahoma, sans-serif;">متن</textarea>
+        <textarea placeholder="این یک ویرایشگر سادهٔ فارسی با قابلیت ذخیرهٔ خودکار متن در مرورگرتان است." id="textArea" oninput="updateCounters()" onchange="updateCounters()" style="background-color: #EAEAEA; font-size: 120%; width: 100%; height: 20em; font-family: 'Segoe UI', 'Noto Sans Arabic', Tahoma, sans-serif;">متن</textarea>
         <div style="font-size: 80%; margin: .5em">
+            <button onclick="openFile()">باز کردن پرونده</button>
+            <button onclick="saveFile()">ذخیره پرونده</button>
             <button onclick="superTool()">ابرابزار</button>
             <button onclick="persianDigits()">اعداد فارسی</button>
             <button onclick="persianSortTextButton()">ترتیب الفبا</button>
@@ -47,6 +49,20 @@
         </div>
         <script src="persiantools.js"></script>
         <script>
+            let fileHandle;
+            async function openFile() {
+                [fileHandle] = await window.showOpenFilePicker();
+                const file = await fileHandle.getFile();
+                textArea.value = await file.text();
+            }
+
+            async function saveFile() {
+                if (fileHandle === undefined) [fileHandle] = await window.showOpenFilePicker();
+                const writable = await fileHandle.createWritable();
+                await writable.write(textArea.value);
+                await writable.close();
+            }
+
             function showReplaceTool() {
                 document.getElementById('replaceToolButton').style.display = 'none';
                 document.getElementById('replaceTool').style.display = 'inline';
@@ -68,20 +84,20 @@
                     pattern = escapeRegExp(pattern);
                 pattern = new RegExp(pattern, 'g');
                 var replaceValue = document.getElementById('replace-to').value;
-                textarea.value = textarea.value.replace(pattern, replaceValue);
+                textArea.value = textArea.value.replace(pattern, replaceValue);
             }
 
             function superTool() {
-                var text = textarea.value;
+                var text = textArea.value;
                 text = persianTools.applyOrthography(text);
                 text = persianTools.applyZwnj(text);
                 text = persianTools.punctuation(text);
                 text = persianTools.toStandardPersianCharacters(text);
-                textarea.value = text;
+                textArea.value = text;
             }
 
             function persianDigits() {
-                textarea.value = persianTools.toPersianDigits(textarea.value);
+                textArea.value = persianTools.toPersianDigits(textArea.value);
             }
 
             function toggleNightMode() {
@@ -123,32 +139,32 @@
             }
 
             function persianSortTextButton() {
-                textarea.value = persianSortText(textarea.value);
+                textArea.value = persianSortText(textArea.value);
             }
 
             function uriDecode() {
-                textarea.value = decodeURI(textarea.value.replace(/%20/g, '\u200c\u200d\u200c')).replace(/\u200c\u200d\u200c/g, '%20');
+                textArea.value = decodeURI(textArea.value.replace(/%20/g, '\u200c\u200d\u200c')).replace(/\u200c\u200d\u200c/g, '%20');
             }
 
             function copyToClipboard() {
-                textarea.select();
+                textArea.select();
                 document.execCommand('copy');
             }
 
             document.addEventListener('DOMContentLoaded', function(event) {
-                textarea.value = localStorage.getItem('text') || '';
+                textArea.value = localStorage.getItem('text') || '';
                 if (localStorage.getItem('night-mode') === 'true') toggleNightMode();
             });
 
             setInterval(function() {
-                localStorage.setItem('text', textarea.value);
+                localStorage.setItem('text', textArea.value);
                 localStorage.setItem('night-mode', document.body.classList.contains('night-mode'));
             }, 2000);
 
             function updateCounters() {
-                stats.innerHTML = 'نویسه: ' + [...textarea.value].length.toLocaleString('fa') +
-                    '، کلمه: ' + textarea.value.replace(/\s+/g, ' ').trim().split(' ').length.toLocaleString('fa') +
-                    '، سطر: ' + textarea.value.trim().split('\n').length.toLocaleString('fa');
+                stats.innerHTML = 'نویسه: ' + [...textArea.value].length.toLocaleString('fa') +
+                    '، کلمه: ' + textArea.value.replace(/\s+/g, ' ').trim().split(' ').length.toLocaleString('fa') +
+                    '، سطر: ' + textArea.value.trim().split('\n').length.toLocaleString('fa');
             }
             updateCounters();
         </script>
