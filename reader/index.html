@@ -1,0 +1,142 @@
+<!DOCTYPE html>
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta2/css/all.min.css" integrity="sha512-YWzhKL2whUzgiheMoBFwW8CKV4qpHQAEuvilg9FAn5VJUDwKZZxkJNuGM4XkWuk94WCrrwslk8yWNGmY1EduTA==" crossorigin="anonymous" referrerpolicy="no-referrer" />
+<style>
+    body {
+        --body-bg-color: #ffffff;
+        --body-fg-color: #70757a;
+        --nav-bg-color: #f2f2f2;
+        --nav-fg-color: #70757a;
+        --button-fill-color: #ffffff;
+        --button-hover-fill-color: #f2f2f2;
+        --button-shadow-color: #403c433d;
+
+        --button-shadow-radius: .2em;
+    }
+    body {
+        --night-body-bg-color: #202124;
+        --night-body-fg-color: #bdc1c6;
+        --night-nav-bg-color: #303134;
+        --night-nav-fg-color: #ffffff;
+        --night-button-fill-color: #22272e;
+        --night-button-hover-fill-color: #3c4043;
+        --night-button-shadow-color: #403c433d;
+    }
+    @media (prefers-color-scheme: dark) {
+        body.autonightmode {
+            --body-bg-color: var(--night-body-bg-color);
+            --body-fg-color: var(--night-body-fg-color);
+            --nav-bg-color: var(--night-nav-bg-color);
+            --nav-fg-color: var(--night-nav-fg-color);
+            --button-fill-color: var(--night-button-fill-color);
+            --button-hover-fill-color: var(--night-button-hover-fill-color);
+            --button-shadow-color: var(--night-button-shadow-color);
+        }
+    }
+    body.nightmode { /* should match above */
+        --body-bg-color: var(--night-body-bg-color);
+        --body-fg-color: var(--night-body-fg-color);
+        --nav-bg-color: var(--night-nav-bg-color);
+        --nav-fg-color: var(--night-nav-fg-color);
+        --button-fill-color: var(--night-button-fill-color);
+        --button-hover-fill-color: var(--night-button-hover-fill-color);
+        --button-shadow-color: var(--night-button-shadow-color);
+    }
+
+    body {
+        font-family: system-ui;
+        padding: 0;
+        margin: 0;
+        color: var(--body-fg-color);
+        background-color: var(--body-bg-color);
+    }
+    button {
+        font-family: system-ui;
+    }
+    nav div > button:first-child {
+        border-radius: 2em 0 0 2em;
+        padding-left: 1em;
+    }
+    nav div > button:last-child {
+        border-radius: 0 2em 2em 0;
+        padding-right: 1em;
+    }
+    nav div {
+        box-shadow: 0 0 var(--button-shadow-radius) 0 rgba(64,60,67,.24);
+        border-radius: 2em;
+    }
+    nav button {
+        margin: 0;
+        padding: .8em;
+        text-decoration: none;
+        color: var(--nav-fg-color);
+        background-color: var(--button-fill-color);
+        border: none;
+        transition: all 150ms linear;
+    }
+    nav > button {
+        box-shadow: 0 0 var(--button-shadow-radius) 0 var(--button-shadow-color);
+        margin: 0;
+        border-radius: 2em;
+    }
+    button:hover {
+        background-color: var(--button-hover-fill-color);
+    }
+    nav {
+        padding: 1em;
+        background-color: var(--nav-bg-color);
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+    }
+
+    sidebar {
+        padding: 0 1.5em;
+        width: 250px;
+        font-size: 75%;
+        line-height: 140%;
+    }
+    sidebar > a {
+        color: var(--body-fg-color);
+        padding: 0 1.4em;
+        display: block;
+    }
+    sidebar > a > i {
+        width: 1.2em;
+        padding-right: .2em;
+        text-align: center;
+    }
+</style>
+<body lang="en" dir="ltr" class="nightmode">
+    <nav>
+        <button>Subscribe</button>
+        <div>
+            <button class="fas fa-chevron-up"></button><button class="fas fa-chevron-down"></button>
+            <button class="fas fa-sync"></button><button class="fas fa-caret-down"></button>
+            <button class="fas fa-check"></button><button class="fas fa-caret-down"></button>
+            <button>Checked</button><button>All</button>
+            <button class="fas fa-list-ul"></button><button class="fas fa-th-list"></button>
+            <button class="fas fa-search"></button>
+        </div>
+        <div>
+            <button class="fas fa-cloud-moon" onclick="toggleNightMode()"></button><button class="fas fa-sliders-h"></button>
+        </div>
+    </nav>
+    <div id="content">
+        <sidebar>
+            <a><i class="fas fa-inbox"></i><b>All</b> (6)</a>
+            <a><i class="fas fa-star"></i>Starred</a>
+            <a><i class="fas fa-caret-down"></i>Comics</a>
+        </sidebar>
+    </div>
+
+    <script>
+        function toggleNightMode() {
+            const prefersDarkScheme = window.matchMedia("(prefers-color-scheme: dark)");
+            if (document.body.classList.contains('nightmode'))
+                document.body.classList.remove('nightmode');
+            else
+                document.body.classList.add('nightmode');
+        }
+    </script>
+</body>
