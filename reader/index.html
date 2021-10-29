@@ -1,6 +1,10 @@
 <!DOCTYPE html>
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta2/css/all.min.css" integrity="sha512-YWzhKL2whUzgiheMoBFwW8CKV4qpHQAEuvilg9FAn5VJUDwKZZxkJNuGM4XkWuk94WCrrwslk8yWNGmY1EduTA==" crossorigin="anonymous" referrerpolicy="no-referrer" />
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta2/css/all.min.css"
+    integrity="sha512-YWzhKL2whUzgiheMoBFwW8CKV4qpHQAEuvilg9FAn5VJUDwKZZxkJNuGM4XkWuk94WCrrwslk8yWNGmY1EduTA=="
+    crossorigin="anonymous" referrerpolicy="no-referrer" />
+<script src="https://code.jquery.com/jquery-3.6.0.slim.min.js"
+    integrity="sha256-u7e5khyithlIdTpu22PHhENmPcRdFiHRjhAuHcs05RI=" crossorigin="anonymous"></script>
 <style>
     body {
         --body-bg-color: #ffffff;
@@ -13,6 +17,7 @@
 
         --button-shadow-radius: .2em;
     }
+
     body {
         --night-body-bg-color: #202124;
         --night-body-fg-color: #bdc1c6;
@@ -22,6 +27,7 @@
         --night-button-hover-fill-color: #3c4043;
         --night-button-shadow-color: #403c433d;
     }
+
     @media (prefers-color-scheme: dark) {
         body.autonightmode {
             --body-bg-color: var(--night-body-bg-color);
@@ -33,7 +39,9 @@
             --button-shadow-color: var(--night-button-shadow-color);
         }
     }
-    body.nightmode { /* should match above */
+
+    body.nightmode {
+        /* should match above */
         --body-bg-color: var(--night-body-bg-color);
         --body-fg-color: var(--night-body-fg-color);
         --nav-bg-color: var(--night-nav-bg-color);
@@ -50,38 +58,74 @@
         color: var(--body-fg-color);
         background-color: var(--body-bg-color);
     }
+
     button {
         font-family: system-ui;
     }
-    nav div > button:first-child {
+
+    nav {
+        position: fixed;
+        width: 98%;
+    }
+
+    nav div>button:first-child {
         border-radius: 2em 0 0 2em;
         padding-left: 1em;
     }
-    nav div > button:last-child {
+
+    nav div>button:last-child {
         border-radius: 0 2em 2em 0;
         padding-right: 1em;
     }
+
     nav div {
-        box-shadow: 0 0 var(--button-shadow-radius) 0 rgba(64,60,67,.24);
+        box-shadow: 0 0 var(--button-shadow-radius) 0 rgba(64, 60, 67, .24);
         border-radius: 2em;
     }
+
     nav button {
+        height: 2.5em;
         margin: 0;
-        padding: .8em;
+        padding: 0 .8em;
         text-decoration: none;
         color: var(--nav-fg-color);
         background-color: var(--button-fill-color);
         border: none;
         transition: all 150ms linear;
     }
-    nav > button {
+
+    .hide-on-search {
+        display: none;
+    }
+
+    .hide-search-box .hide-on-search {
+        display: inline;
+    }
+
+    #search-box {
+        border-radius: 2em 0 0 2em;
+        border: none;
+        display: inline;
+        height: 2.5em;
+        padding-left: 1em;
+        color: var(--nav-fg-color);
+        background-color: var(--button-fill-color);
+    }
+
+    .hide-search-box #search-box {
+        display: none;
+    }
+
+    nav>button {
         box-shadow: 0 0 var(--button-shadow-radius) 0 var(--button-shadow-color);
         margin: 0;
         border-radius: 2em;
     }
+
     button:hover {
         background-color: var(--button-hover-fill-color);
     }
+
     nav {
         padding: 1em;
         background-color: var(--nav-bg-color);
@@ -91,52 +135,196 @@
     }
 
     sidebar {
-        padding: 0 1.5em;
-        width: 250px;
+        padding: 7em 1.5em 0;
+        width: 15em;
         font-size: 75%;
         line-height: 140%;
+        position: fixed;
     }
-    sidebar > a {
+
+    sidebar>a {
         color: var(--body-fg-color);
         padding: 0 1.4em;
         display: block;
     }
-    sidebar > a > i {
+
+    sidebar>a>i {
         width: 1.2em;
         padding-right: .2em;
         text-align: center;
     }
+
+    #content {
+        padding: 4em 0 0;
+        max-width: min(80vw, 60em);
+        margin-right: auto;
+        margin-left: auto;
+    }
 </style>
+
 <body lang="en" dir="ltr" class="nightmode">
     <nav>
         <button>Subscribe</button>
-        <div>
-            <button class="fas fa-chevron-up"></button><button class="fas fa-chevron-down"></button>
-            <button class="fas fa-sync"></button><button class="fas fa-caret-down"></button>
-            <button class="fas fa-check"></button><button class="fas fa-caret-down"></button>
-            <button>Checked</button><button>All</button>
-            <button class="fas fa-list-ul"></button><button class="fas fa-th-list"></button>
-            <button class="fas fa-search"></button>
+        <div class="toggle-search-box hide-search-box">
+            <button class="hide-on-search fas fa-chevron-up"></button><button
+                class="hide-on-search fas fa-chevron-down"></button>
+            <button class="hide-on-search fas fa-sync"></button><button
+                class="hide-on-search fas fa-caret-down"></button>
+            <button class="hide-on-search fas fa-check"></button><button
+                class="hide-on-search fas fa-caret-down"></button>
+            <button class="hide-on-search">Checked</button><button class="hide-on-search">All</button>
+            <button class="hide-on-search fas fa-list-ul"></button><button
+                class="hide-on-search fas fa-th-list"></button>
+            <input type="search" id="search-box"><button id="search" class="fas fa-search"
+                onclick="toggleSearch()"></button>
         </div>
         <div>
-            <button class="fas fa-cloud-moon" onclick="toggleNightMode()"></button><button class="fas fa-sliders-h"></button>
+            <button class="fas fa-cloud-moon" onclick="toggleNightMode()"></button><button
+                class="fas fa-sliders-h"></button>
         </div>
     </nav>
-    <div id="content">
+    <main>
         <sidebar>
             <a><i class="fas fa-inbox"></i><b>All</b> (6)</a>
             <a><i class="fas fa-star"></i>Starred</a>
             <a><i class="fas fa-caret-down"></i>Comics</a>
         </sidebar>
-    </div>
+        <div id="content">
+            <p>
+                Lorem ipsum dolor sit amet, consectetur adipiscing elit. Praesent volutpat lorem sed felis dictum
+                tempor. Donec rutrum volutpat tristique. Integer vitae nisl quis elit ullamcorper aliquet vel sit amet
+                lacus. Curabitur sodales fringilla nisl, consectetur commodo metus elementum a. In accumsan massa ut
+                lacus tempus hendrerit. Pellentesque egestas luctus varius. Proin vel elementum elit. Ut risus est,
+                volutpat vitae lacinia vitae, placerat vel arcu. Pellentesque iaculis elit lorem, quis ultricies metus
+                laoreet vel. Interdum et malesuada fames ac ante ipsum primis in faucibus. Aliquam auctor ac velit id
+                congue. Vivamus lacinia leo et est consectetur, id sollicitudin massa vulputate.
+            </p>
+            <p>
+                Sed viverra nibh eu scelerisque congue. Sed eget interdum augue. Nunc dictum aliquet porta. Pellentesque
+                a facilisis justo. Vivamus lacus sapien, facilisis a viverra eget, dignissim sed elit. Quisque ut lectus
+                blandit, lobortis eros a, bibendum lectus. Sed cursus mi id sem dignissim, quis ultrices dui convallis.
+                Donec vel blandit tortor. Nam nec lacus quam. Mauris sapien nisl, maximus vitae tellus a, dignissim
+                congue orci. Duis ut rutrum lacus, non mattis magna. Vestibulum vel maximus turpis.
+            </p>
+            <p>
+                Nullam pellentesque, massa ut aliquet porta, metus felis ullamcorper odio, eget interdum nisl ipsum ac
+                elit. Aenean sit amet laoreet libero, sed aliquet arcu. In sit amet metus rhoncus, efficitur lectus a,
+                accumsan odio. Etiam aliquam lorem vel est sodales pulvinar. Nam nec orci tincidunt, tristique tellus
+                vitae, hendrerit nisl. Integer vitae venenatis magna. Proin eget faucibus est. Nulla et aliquam lorem.
+                Sed egestas arcu leo, nec ornare arcu consectetur sodales. Sed dignissim, ligula et interdum lobortis,
+                nunc nulla cursus enim, eget dictum dui turpis nec nisl.
+            </p>
+            <p>
+                Vestibulum cursus ex fermentum nibh posuere, sit amet varius justo porta. Vestibulum a dolor lacinia,
+                dapibus eros at, volutpat elit. Nulla urna lorem, rutrum eu suscipit eu, condimentum eu augue.
+                Vestibulum imperdiet vestibulum orci id sodales. Donec ultricies enim bibendum consequat gravida.
+                Integer rutrum neque et justo suscipit pulvinar. Pellentesque et purus commodo, sagittis ipsum eget,
+                varius nisl. Ut varius velit ut velit tempor, vitae malesuada nulla feugiat.
+            </p>
+            <p>
+                Duis dignissim ligula in aliquet condimentum. Curabitur posuere dolor eget lorem euismod viverra a at
+                est. Maecenas consequat, lorem ut accumsan molestie, erat quam finibus enim, in dignissim sapien est a
+                augue. Mauris non maximus velit. Phasellus vitae vestibulum metus, a tincidunt nunc. Aenean interdum
+                ultrices porttitor. Aenean vel nisl at enim viverra lacinia. Ut molestie lobortis sapien non posuere.
+                Sed nec neque sit amet tellus tempus fringilla et vel turpis. Phasellus at est eget lectus euismod
+                hendrerit. Duis nec magna in nisl porta aliquet. Cras faucibus quis nisi et cursus. Curabitur rhoncus
+                scelerisque nisi vel suscipit. Nulla in odio suscipit, commodo risus ut, sollicitudin dui.
+            </p>
+            <p>
+                Proin dapibus felis mi, sit amet tincidunt dui blandit et. Nunc tellus est, interdum in aliquam non,
+                rhoncus finibus eros. Pellentesque fringilla rhoncus velit, et suscipit purus egestas et. Curabitur
+                varius fringilla purus. Donec dapibus justo risus, non interdum est fermentum nec. Duis ipsum ante,
+                lacinia et urna sed, sollicitudin bibendum ligula. Nunc tincidunt mattis ipsum, et lobortis mi commodo
+                non. Aenean congue dolor ut feugiat euismod. Nunc bibendum hendrerit cursus. Nam id ipsum ultrices ex
+                suscipit luctus ac et mi. Praesent est nunc, accumsan eu vulputate sed, laoreet quis sapien. Suspendisse
+                eu arcu id velit imperdiet lacinia. Nunc eleifend vehicula lacus, eget euismod metus ultricies vitae.
+                Duis faucibus nibh auctor, euismod lectus in, mollis justo. Phasellus malesuada enim et magna luctus
+                scelerisque sit amet quis diam.
+            </p>
+            <p>
+                Sed sit amet lacus ut dolor fringilla mattis non vulputate turpis. Donec dignissim diam mauris, non
+                eleifend justo pretium at. Sed justo enim, malesuada ornare ex ut, varius finibus dui. Ut non nisl
+                tincidunt nulla dapibus sagittis. Nunc velit quam, egestas ac dui et, placerat cursus velit. Phasellus
+                iaculis ex ut sem porta, ac blandit quam porttitor. Maecenas rutrum sapien id nunc ornare, sed efficitur
+                dolor varius. Vestibulum posuere interdum ligula sit amet finibus. Phasellus at elit pretium, accumsan
+                leo nec, eleifend augue. Pellentesque et posuere sem. Maecenas vulputate blandit turpis, sed mattis diam
+                luctus sit amet. Suspendisse semper augue neque, non ultricies nisi vestibulum vel. Donec sit amet
+                pharetra est. Sed imperdiet vestibulum pharetra. Nam eu ullamcorper urna, vel blandit nunc. Praesent in
+                porttitor urna.
+            </p>
+            <p>
+                Phasellus in efficitur dui, ut suscipit enim. Etiam at eleifend lorem, in lobortis nunc. Nam nec purus
+                mauris. Curabitur ultricies nisl eu turpis facilisis, dapibus fermentum magna ornare. Nunc vel posuere
+                risus. Nulla congue neque est, ut malesuada purus maximus sit amet. Quisque mollis, ante at scelerisque
+                tincidunt, sem magna vestibulum nunc, ac commodo est lacus id tellus. Proin sed sodales nisi.
+            </p>
+            <p>
+                Nullam viverra id metus ut interdum. Nulla nec libero quam. Vivamus quis mi in diam luctus volutpat.
+                Nullam quis ex enim. Pellentesque habitant morbi tristique senectus et netus et malesuada fames ac
+                turpis egestas. Donec at magna sit amet dolor ornare elementum ut at sapien. Maecenas sit amet lectus
+                lorem. Suspendisse potenti. Pellentesque ornare vulputate mi et auctor. Suspendisse metus turpis,
+                dapibus eu ligula at, congue consectetur neque. Lorem ipsum dolor sit amet, consectetur adipiscing elit.
+                Vestibulum in semper est. Vivamus tincidunt sem at mattis commodo. In condimentum sollicitudin nulla,
+                sed faucibus enim dignissim sed. Nam imperdiet arcu ex, a rutrum eros ullamcorper eu.
+            </p>
+            <p>
+                Suspendisse tempor urna efficitur pretium aliquam. Cras eu orci sed elit convallis sodales in eu turpis.
+                Suspendisse tincidunt sem id bibendum lacinia. Suspendisse potenti. Duis ac metus vitae nibh sodales
+                accumsan eget non tellus. Aliquam erat volutpat. Cras ac nulla ac erat porttitor viverra. Class aptent
+                taciti sociosqu ad litora torquent per conubia nostra, per inceptos himenaeos. Duis vestibulum et neque
+                at fringilla. In hac habitasse platea dictumst. Vestibulum pulvinar lectus id aliquam sagittis.
+            </p>
+            <p>
+                Praesent scelerisque dui et diam posuere, quis vulputate ipsum placerat. Donec vel tempus lectus. Nullam
+                ultrices elit ipsum, in pulvinar augue elementum vitae. Quisque euismod id massa sed luctus. Donec in
+                diam consequat ipsum placerat eleifend vel sit amet nisi. Aenean sit amet orci orci. Aliquam vitae
+                eleifend erat, et imperdiet turpis. Quisque sed luctus eros, sit amet convallis orci.
+            </p>
+            <p>
+                Quisque pretium, libero nec vestibulum mollis, leo est lobortis diam, sit amet vulputate risus velit nec
+                turpis. Integer magna neque, aliquet non mi id, vulputate dictum orci. Nam sollicitudin dapibus turpis.
+                Mauris elementum mauris urna, interdum lobortis tortor feugiat sed. Ut ac commodo neque. Nulla feugiat,
+                turpis vitae egestas porttitor, ante orci tincidunt elit, quis semper mauris enim eu metus. Orci varius
+                natoque penatibus et magnis dis parturient montes, nascetur ridiculus mus. Ut enim lorem, laoreet vitae
+                arcu sed, maximus efficitur nisi. Nulla facilisis ex vel placerat vestibulum. Proin id lorem neque. Duis
+                eget ullamcorper neque. Maecenas fermentum lacus in justo tempus consectetur. Aenean fringilla faucibus
+                eleifend. Integer eget sapien tortor.
+            </p>
+            <p>
+                Nam quis orci sagittis, congue ipsum eu, vulputate dolor. Donec et enim mauris. Vivamus id faucibus
+                eros. Nulla sagittis tristique nunc eget scelerisque. Duis porttitor mollis aliquet. Aenean nulla risus,
+                semper at iaculis ac, semper non lacus. Morbi a enim at ante ultrices laoreet at sed mauris. Praesent
+                commodo in justo at tincidunt. Donec mollis enim in feugiat malesuada. Donec maximus quis eros ut
+                facilisis. Morbi eu mi non urna accumsan molestie. In id metus sed tortor consectetur laoreet eleifend
+                eget tellus. Curabitur scelerisque rhoncus leo, ac pretium eros scelerisque sit amet. Nam suscipit
+                tristique diam at porta.
+            </p>
+            <p>
+                Quisque sodales placerat ex, at tincidunt turpis volutpat fermentum. Donec risus neque, sollicitudin
+                quis est id, ultricies dapibus risus. Cras varius lacus a dignissim rhoncus. Mauris consequat leo nisl,
+                sed porta enim imperdiet non. Morbi id orci eros. Aliquam efficitur euismod tortor a pretium. Aliquam
+                pulvinar euismod massa, sit amet vehicula libero lacinia at. Nulla elit nisl, bibendum eu sem vel,
+                elementum convallis leo. Duis scelerisque rutrum scelerisque.
+            </p>
+            <p>
+                Vivamus lobortis suscipit massa ac placerat. Fusce sit amet enim suscipit, pretium purus non, fermentum
+                enim. Aliquam sed elit risus. Proin fermentum dolor ac dui tempus, sed porttitor libero vestibulum.
+                Etiam aliquam metus ut ex faucibus commodo. Fusce elementum, diam id fermentum elementum, mi justo
+                commodo sem, ut pellentesque enim massa sit amet metus. Donec ut orci scelerisque, semper diam id,
+                faucibus massa. Curabitur eu metus vel lacus lacinia maximus. Duis ac lectus placerat, tristique felis
+                iaculis, gravida libero. Mauris blandit tincidunt nunc, vel euismod neque eleifend in.
+            </p>
+        </div>
+    </main>
 
     <script>
+        function toggleSearch() {
+            $('.toggle-search-box').toggleClass('hide-search-box');
+        }
+
         function toggleNightMode() {
-            const prefersDarkScheme = window.matchMedia("(prefers-color-scheme: dark)");
-            if (document.body.classList.contains('nightmode'))
-                document.body.classList.remove('nightmode');
-            else
-                document.body.classList.add('nightmode');
+            // const prefersDarkScheme = window.matchMedia("(prefers-color-scheme: dark)");
+            $(document.body).toggleClass('nightmode');
         }
     </script>
 </body>
