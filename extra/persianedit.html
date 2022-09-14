@@ -125,11 +125,12 @@
             }
 
             function superTool() {
-                var text = textArea.value;
+                var text = textArea.value.replace(/¬/g, '\u200c');
                 text = persianTools.applyOrthography(text);
                 text = persianTools.applyZwnj(text);
                 text = persianTools.punctuation(text);
                 text = persianTools.toStandardPersianCharacters(text);
+                text = persianToolsDictionary.dictation(text);
                 textArea.value = text;
             }
 
