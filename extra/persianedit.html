@@ -125,7 +125,10 @@
             }
 
             function superTool() {
-                var text = textArea.value.replace(/¬/g, '\u200c');
+                var text = textArea.value.replace(/¬/g, '\u200c')
+                    .replace(/(^|[\s\.])اینها(?=[\s\.]|$)/g, '$1این‌ها')
+                    .replace(/(^|[\s\.])آنها(?=[\s\.]|$)/g, '$1آن‌ها')
+                    .replace(/(^|[\s\.])راه حل(?=[\s\.]|$)/g, '$1راه‌حل');
                 text = persianTools.applyOrthography(text);
                 text = persianTools.applyZwnj(text);
                 text = persianTools.punctuation(text);
