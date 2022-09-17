@@ -135,7 +135,8 @@
                 text = persianTools.punctuation(text);
                 text = persianTools.toStandardPersianCharacters(text);
                 text = persianToolsDictionary.dictation(text);
-                textArea.value = text;
+                textArea.value = text
+                    .replace(/^([\.،]) /mg, '$1'); // remove space after punctuations, needed for faulty text
             }
 
             function persianDigits() {
