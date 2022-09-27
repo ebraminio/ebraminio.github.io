@@ -4,15 +4,18 @@ layout: default
 
 ## Posts [<img width="14" height="14" src="https://upload.wikimedia.org/wikipedia/en/4/43/Feed-icon.svg">](/feed.xml)
 
+<details>
+<summary>Outdated useful links</summary>
+
+Under construction
+
+----
+
 <ul class="posts">
   {% for post in site.posts %}
     <li><span>{{ post.date | date: "%Y-%m-%d" }}</span> &raquo; <a href="{{ BASE_PATH }}{{ post.url }}">{{ post.title }}</a></li>
   {% endfor %}
 </ul>
-
-<details>
-<summary>Outdated useful links</summary>
-----
 
 ## TrueType/OpenType/AAT related quick links
 * [Microsft OpenType Specication](https://docs.microsoft.com/en-us/typography/opentype/spec/glyf)
