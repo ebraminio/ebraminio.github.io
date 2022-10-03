@@ -136,7 +136,8 @@
                 text = persianTools.toStandardPersianCharacters(text);
                 text = persianToolsDictionary.dictation(text);
                 textArea.value = text
-                    .replace(/([^ ])ه ای /g, '$1ه‌ای ')
+                    .replace(new RegExp('([' + persianTools.persianCharacters + '])ه ای([ ،])', 'g'), '$1ه‌ای$2')
+                    .replace(new RegExp('(^| )بی ([' + persianTools.persianCharacters + '])', 'g'), '$1بی\u200c$2')
                     .replace(/^([\.،]) /mg, '$1'); // remove space after punctuations, needed for faulty text
             }
 
