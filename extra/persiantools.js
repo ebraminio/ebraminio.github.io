@@ -295,7 +295,7 @@ var persianTools = (function () {
 	}
 
 	function applyZwnj(text) {
-		text=complexVerbsApplyZwnj(text);
+		//text=complexVerbsApplyZwnj(text);
 		return normalizeZwnj(text)
 			.replace(
 				new RegExp('(^|[^' + persianCharacters + '])(می|نمی) ?' + persianPastVerbs +
