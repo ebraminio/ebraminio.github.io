@@ -136,6 +136,7 @@
                 text = persianTools.toStandardPersianCharacters(text);
                 text = persianToolsDictionary.dictation(text);
                 text = text.replace(/\/\/.*?(?=[\s\n\|\}\]<]|$)/gi, function (x) {
+                    x = x.replace(/%20/g, '\u200c\u200d\u200c20');
                     try {
                         x = decodeURI(x);
                     } catch (e) {
@@ -143,7 +144,7 @@
                             x = decodeURIComponent(unescape(x));
                         } catch (e) { console.log(e); }
                     }
-                    return x;
+                    return x.replace(/\u200c\u200d\u200c20/g, '%20');
                 });
                 textArea.value = text
                     .replace(new RegExp('([' + persianTools.persianCharacters + '])ه ای([ ،])', 'g'), '$1ه‌ای$2')
