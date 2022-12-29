@@ -4,6 +4,13 @@ layout: default
 
 ## Posts [<img width="14" height="14" src="https://upload.wikimedia.org/wikipedia/en/4/43/Feed-icon.svg">](/feed.xml)
 
+## Educational YouTube playlists
+* https://www.youtube.com/@mitocw/playlists or https://ocw.mit.edu/search/
+* https://www.youtube.com/user/YaleCourses/playlists
+* https://www.youtube.com/@UCIOpen/playlists
+* https://www.youtube.com/@stanfordonline/playlists
+* https://www.youtube.com/@bostonuniversity6443/playlists
+
 <details>
 <summary>Outdated useful links</summary>
 
