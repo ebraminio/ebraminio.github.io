@@ -125,6 +125,30 @@
                 textArea.value = textArea.value.replace(pattern, replaceValue);
             }
 
+            // https://stackoverflow.com/a/72913678
+            function insertAtCursor(el, text) {
+                if (el.selectionStart !== undefined) {
+                    var startPos = el.selectionStart;
+                    var endPos = el.selectionEnd;
+                    el.value = el.value.substring(0, startPos) +
+                        text +
+                        el.value.substring(endPos, el.value.length);
+                    el.selectionStart = startPos + text.length;
+                    el.selectionEnd = startPos + text.length;
+                } else {
+                    el.value += text;
+                }
+            }
+
+            textArea.addEventListener("keydown", function (e) {
+                var TABKEY = 9;
+                if (e.keyCode === TABKEY) {
+                    insertAtCursor(this, '\t');
+                    e.preventDefault();
+                    return false;
+                }
+            }, false);
+
             function superTool() {
                 var text = textArea.value.replace(/¬/g, '\u200c')
                     .replace(/(^|[\s\.])اینها(?=[\s\.]|$)/g, '$1این‌ها')
