@@ -138,7 +138,7 @@
                     el.value = el.value.substring(0, startPos) +
                         text +
                         el.value.substring(endPos, el.value.length);
-                    el.selectionStart = startPos + text.length;
+                    el.selectionStart = startPos + (startPos === endPos ? text.length : 0);
                     el.selectionEnd = startPos + text.length;
                 } else {
                     el.value += text;
