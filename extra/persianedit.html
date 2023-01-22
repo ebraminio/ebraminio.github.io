@@ -126,10 +126,15 @@
             }
 
             // https://stackoverflow.com/a/72913678
-            function insertAtCursor(el, text) {
+            function insertAtCursor(el, text, shiftIsPressed) {
                 if (el.selectionStart !== undefined) {
                     var startPos = el.selectionStart;
                     var endPos = el.selectionEnd;
+                    if (startPos !== endPos) {
+                        text = el.value.substring(startPos, endPos).split('\n').map(function (x) {
+                            return shiftIsPressed ? x.replace(/^\t/, '') : '\t' + x;
+                        }).join('\n');
+                    }
                     el.value = el.value.substring(0, startPos) +
                         text +
                         el.value.substring(endPos, el.value.length);
@@ -143,7 +148,7 @@
             textArea.addEventListener("keydown", function (e) {
                 var TABKEY = 9;
                 if (e.keyCode === TABKEY) {
-                    insertAtCursor(this, '\t');
+                    insertAtCursor(this, '\t', e.shiftKey);
                     e.preventDefault();
                     return false;
                 }
