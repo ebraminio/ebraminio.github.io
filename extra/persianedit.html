@@ -175,14 +175,16 @@
                     }
                     return x.replace(/\u200c\u200d\u200c20/g, '%20');
                 });
-                textArea.value = text
+                text = text
                     .replace(new RegExp('([' + persianTools.persianCharacters + '])ه ای([ ،])', 'g'), '$1ه‌ای$2')
                     .replace(new RegExp('(^| )بی ([' + persianTools.persianCharacters + '])', 'g'), '$1بی\u200c$2')
                     .replace(new RegExp('([' + persianTools.persianCharacters + '])\\. (و|که) '), '$1 $2 ');
+                text = persianTools.decimalPointToPersian(text);
+                textArea.value = text;
             }
 
             function persianDigits() {
-                textArea.value = persianTools.toPersianDigits(textArea.value);
+                textArea.value = persianTools.decimalPointToPersian(persianTools.toPersianDigits(textArea.value));
             }
 
             function toggleNightMode() {

@@ -1,4 +1,4 @@
-// https://fa.wikipedia.org/w/index.php?title=مدیاویکی:Gadget-Extra-Editbuttons-persiantools.js&oldid=33599383
+// https://fa.wikipedia.org/w/index.php?title=مدیاویکی:Gadget-Extra-Editbuttons-persiantools.js&oldid=37891881
 var persianTools = (function () {
 	'use strict';
 	
@@ -108,7 +108,9 @@ var persianTools = (function () {
 			.replace(/ې/g, 'ی') // Uyghur
 			.replace(/ہ/g, 'ه') // Convert &#x06C1; to &#x0647; ہہہہ to ههه
 			.replace(/ە/g, 'ه\u200c') // Kurdish
-			.replace(/ھ/g, 'ه'); // Kurdish
+			.replace(/ھ/g, 'ه') // Kurdish
+			.replace(new RegExp('ا' + 'ٔ', 'g'), 'أ') // Use canonical form per ISIRI 6219
+			.replace(new RegExp('ا' + 'ٓ', 'g'), 'آ');
 	}
 
 	function toPersianDigits(text) {
@@ -121,6 +123,10 @@ var persianTools = (function () {
 			.replace(new RegExp('٪([' + persianDigits + ']+(?:[.٬٫][' + persianDigits + ']*)*)', 'g'), '$1٪')
 			//.replace(new RegExp('([' + persianDigits + '])\\.(?=[' + persianDigits + '])', 'g'), '$1٫') // persian decimal separator
 			.replace(new RegExp('([' + persianDigits + '])\\،(?=[' + persianDigits + '])', 'g'), '$1٬'); // جایگزینی جداکننده هزاگان به جای ویرگول در میان اعداد
+	}
+
+	function decimalPointToPersian(text) {
+		return text.replace(new RegExp('([' + persianDigits + '])\\.(?=[' + persianDigits + '])', 'g'), '$1٫');
 	}
 
 	function applyOrthography(text) {
@@ -447,6 +453,7 @@ var persianTools = (function () {
 		punctuation: punctuation,
 		toPersianDigits: toPersianDigits,
 		toStandardPersianCharacters: toStandardPersianCharacters,
+		decimalPointToPersian: decimalPointToPersian,
 		vowels: vowels,
 		persianCharacters: persianCharacters,
 		persianCharactersNoVowels: persianCharactersNoVowels
