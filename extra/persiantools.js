@@ -1,7 +1,7 @@
 // https://fa.wikipedia.org/w/index.php?title=مدیاویکی:Gadget-Extra-Editbuttons-persiantools.js&oldid=37891881
 var persianTools = (function () {
 	'use strict';
-	
+
 	var persianGlyphs, persianDigits, arabicIndicDigits, arabicDigits,
 		vowels, persianCharacters, persianCharactersNoVowels, persianPastVerbs,
 		persianPresentVerbs, persianComplexPastVerbs, persianComplexPresentVerbs, similarPersianCharacters, hamza;
@@ -124,7 +124,7 @@ var persianTools = (function () {
 			//.replace(new RegExp('([' + persianDigits + '])\\.(?=[' + persianDigits + '])', 'g'), '$1٫') // persian decimal separator
 			.replace(new RegExp('([' + persianDigits + '])\\،(?=[' + persianDigits + '])', 'g'), '$1٬'); // جایگزینی جداکننده هزاگان به جای ویرگول در میان اعداد
 	}
-
+	
 	function decimalPointToPersian(text) {
 		return text.replace(new RegExp('([' + persianDigits + '])\\.(?=[' + persianDigits + '])', 'g'), '$1٫');
 	}
@@ -316,9 +316,10 @@ var persianTools = (function () {
 			// ماضی نقلی
 			.replace(
 				new RegExp('(^|[^' + persianCharacters + '])(ن|)' + persianPastVerbs +
-					'ه (ام|ای|ایم|اید|اند|است)($|[^' + persianCharacters + '])', 'g'),
+					'ه (ام|ای|ایم|اید|اند)($|[^' + persianCharacters + '])', 'g'),
 				'$1$2$3ه\u200c$4$5'
 			)
+			.replace(new RegExp('([' + persianCharacters + '])ه‌است($|[^' + persianCharacters + '])', 'g'), '$1ه است$2')
 			
 			// بن فعل مضارع «دان» جدا آمد چون پسوند «ی» با عبارت «میدانی» تداخل داشت
 			.replace(
