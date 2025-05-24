@@ -7,11 +7,10 @@ show_downloads: false
 google_analytics:
 
 author:
-  name: Ebrahim Byagowi
-  name_fa: ابراهیم بیاگوی
+  name: Ebrahim
+  name_fa: Ebrahim
   email: ebrahim@gnu.org
   github: ebraminio
-  twitter: ebraminio
 
 plugins:
   - jekyll-mentions
