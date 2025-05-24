@@ -67,8 +67,8 @@
             }
 
             async function saveFile() {
-                if (window.showSaveFilePicker) {
-                    if (fileHandle === undefined) [fileHandle] = await window.showSaveFilePicker();
+                if (window.showOpenFilePicker) {
+                    if (fileHandle === undefined) [fileHandle] = await window.showOpenFilePicker();
                     const writable = await fileHandle.createWritable();
                     await writable.write(textArea.value);
                     await writable.close();
